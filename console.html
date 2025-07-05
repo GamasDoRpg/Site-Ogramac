@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>BLOG OGRAMAC</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: 'Segoe UI', sans-serif;
+        background-color: #0d0d0d;
+        color: #e0e0e0;
+      }
+      header {
+        background-color: #111;
+        padding: 40px 20px;
+        text-align: center;
+        border-bottom: 1px solid #333;
+      }
+      header h1 {
+        font-size: 2.8em;
+        margin: 0;
+        color: #00f7ff;
+      }
+      header p {
+        margin-top: 10px;
+        color: #aaa;
+      }
+      main {
+        max-width: 960px;
+        margin: 40px auto;
+        padding: 0 20px;
+      }
+      .console {
+        background-color: #000;
+        padding: 20px;
+        border-radius: 8px;
+        font-family: monospace;
+        font-size: 1rem;
+        color: #00f7ff;
+        height: 400px;
+        overflow-y: auto;
+        border: 1px solid #00f7ff44;
+      }
+      .console-line {
+        margin: 5px 0;
+      }
+      .input-line {
+        display: flex;
+        align-items: center;
+        margin-top: 10px;
+      }
+      .input-line span {
+        color: #0ff;
+        margin-right: 6px;
+      }
+      .input-line input {
+        flex: 1;
+        background: transparent;
+        border: none;
+        border-bottom: 1px solid #0ff;
+        color: #00f7ff;
+        font-family: monospace;
+        font-size: 1rem;
+        outline: none;
+      }
+      footer {
+        text-align: center;
+        padding: 30px 0;
+        color: #666;
+        background-color: #111;
+        border-top: 1px solid #333;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>BLOG OGRAMAC</h1>
+      <p>Console Interativo 🖥️</p>
+    </header>
+
+    <main>
+      <div class="console" id="console">
+        <div class="console-line">Digite <code>ajuda</code> para ver os comandos disponíveis.</div>
+      </div>
+      <div class="input-line">
+        <span>>_</span>
+        <input type="text" id="console-input" autofocus autocomplete="off" />
+      </div>
+    </main>
+
+    <footer>
+      <p>© 2025 OGRAMAC. Todos os direitos reservados.</p>
+    </footer>
+
+    <script>
+      const consoleEl = document.getElementById('console');
+      const inputEl = document.getElementById('console-input');
+
+      const comandos = {
+        ajuda: [
+          "Comandos disponíveis:",
+          "- ajuda: mostra esta mensagem",
+          "- atero: sobre a Atero Aerospace",
+          "- jogos: lista seus jogos",
+          "- livros: lista seus livros",
+          "- contato: mostra formas de contato",
+          "- cls: limpa a tela"
+          "- Dica: voce pode usar os comandos principais dos jogos da Bethesda que vai funcionar tbm. Cuidado com o tgm"
+        ],
+        atero: ["Atero Aerospace: Propulsão de alta atmosfera, Acesse os documentos principais dos projetos aqui, digite o Nome Do Projeto + Documentação. Ex(Hiperônia Documentação). Projetos:"
+               "- Hipersônia. "
+               "- Atero Matrix. "
+               "- Atero Dune. "
+               ],
+        jogos: ["Meus jogos. Vc pode acessar a sinopse com o Nome Do Jogo + Sinopse, Vc pode acessar a pasta do google drive contendo a principal documentação com o Nomw Do Jogo + Documentação."
+               "- Desert Sons"
+               "- Stats Revolution"
+               ],
+        livros: ["Livros: 
+                 "-Uma Guerra Do Amanhã"
+                "],
+        contato: ["Acesse ogramac.com.br/contato],
+        cls: "clear"
+      };
+
+      function printLine(text) {
+        const line = document.createElement('div');
+        line.className = 'console-line';
+        line.textContent = text;
+        consoleEl.appendChild(line);
+        consoleEl.scrollTop = consoleEl.scrollHeight;
+      }
+
+      inputEl.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+          const input = inputEl.value.trim().toLowerCase();
+          printLine(">_ " + input);
+          inputEl.value = "";
+
+          if (comandos[input]) {
+            if (comandos[input] === "clear") {
+              consoleEl.innerHTML = "";
+            } else {
+              comandos[input].forEach
+                ? comandos[input].forEach(line => printLine(line))
+                : printLine(comandos[input]);
+            }
+          } else {
+            printLine("Comando não reconhecido. Digite 'ajuda'.");
+          }
+        }
+      });
+    </script>
+  </body>
+</html>
