@@ -3,76 +3,80 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Documento Confidencial</title>
+  <title>DOCUMENTO CONFIDENCIAL</title>
   <style>
-    body {
+    * {
       margin: 0;
       padding: 0;
-      font-family: 'Segoe UI', sans-serif;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
       background-color: #ffffff;
       color: #000000;
     }
 
     header {
-      padding: 40px 20px;
-      text-align: center;
+      display: flex;
+      align-items: center;
+      padding: 20px 40px;
       border-bottom: 1px solid #ccc;
     }
 
+    header img {
+      width: 50px;
+      height: 50px;
+      margin-right: 20px;
+    }
+
     header h1 {
-      font-size: 2.5em;
-      margin: 0;
-      letter-spacing: 1px;
+      font-size: 1.8em;
+      font-weight: bold;
     }
 
     main {
+      padding: 40px;
       max-width: 960px;
-      margin: 40px auto;
-      padding: 0 20px;
+      margin: 0 auto;
       line-height: 1.6;
     }
 
     footer {
       background-color: #f2f2f2;
-      border-top: 1px solid #ccc;
       padding: 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      text-align: center;
       font-size: 0.9em;
-      color: #333;
+      color: #555;
+      margin-top: 40px;
+      border-top: 1px solid #ddd;
     }
 
-    .logo-footer {
-      height: 30px;
+    a {
+      color: #000;
+      text-decoration: underline;
     }
 
-    .right-info {
-      text-align: right;
-      flex-grow: 1;
+    a:hover {
+      opacity: 0.7;
     }
   </style>
 </head>
 <body>
 
   <header>
-    <h1>Documento Interno</h1>
-    <p>Autorização requerida. Acesso restrito.</p>
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/CIA_Logo.svg/1024px-CIA_Logo.svg.png" alt="Logo" />
+    <h1>AAA A Agência</h1>
   </header>
 
   <main>
-    <h2>Introdução</h2>
-    <p>Este documento contém informações classificadas para uso exclusivo de membros autorizados.</p>
-
-    <h2>Resumo Executivo</h2>
-    <p>Os dados aqui descritos representam movimentações internas da corporação e devem ser tratados com sigilo absoluto.</p>
+    <p><strong>Documento Confidencial:</strong> Esta é uma página de demonstração com aparência institucional ou de inteligência. Todos os dados apresentados aqui são fictícios.</p>
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam accumsan augue id lorem luctus, nec ultrices nulla hendrerit. Suspendisse potenti.</p>
+    <p>Para mais informações, entre em contato com a divisão responsável ou acesse o <a href="#">repositório seguro</a>.</p>
   </main>
 
   <footer>
-    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/Black_Lock_Icon.svg/1024px-Black_Lock_Icon.svg.png" alt="Ícone" class="logo-footer">
-    <div class="right-info">
-      &copy; 2025 OGRAMAC Corporation · Confidencial
-    </div>
+    © 2025 AAA A Agência — Todos os direitos reservados.
   </footer>
 
 </body>
