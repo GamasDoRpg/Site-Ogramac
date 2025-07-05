@@ -94,63 +94,72 @@
     </footer>
 
     <script>
-      const consoleEl = document.getElementById('console');
-      const inputEl = document.getElementById('console-input');
+  const consoleEl = document.getElementById('console');
+  const inputEl = document.getElementById('console-input');
 
-      const comandos = {
-        ajuda: [
-          "Comandos disponíveis:",
-          "- ajuda: mostra esta mensagem",
-          "- atero: sobre a Atero Aerospace",
-          "- jogos: lista seus jogos",
-          "- livros: lista seus livros",
-          "- contato: mostra formas de contato",
-          "- cls: limpa a tela"
-          "- Dica: voce pode usar os comandos principais dos jogos da Bethesda que vai funcionar tbm. Cuidado com o tgm"
-        ],
-        atero: ["Atero Aerospace: Propulsão de alta atmosfera, Acesse os documentos principais dos projetos aqui, digite o Nome Do Projeto + Documentação. Ex(Hiperônia Documentação). Projetos:"
-               "- Hipersônia. "
-               "- Atero Matrix. "
-               "- Atero Dune. "
-               ],
-        jogos: ["Meus jogos. Vc pode acessar a sinopse com o Nome Do Jogo + Sinopse, Vc pode acessar a pasta do google drive contendo a principal documentação com o Nomw Do Jogo + Documentação."
-               "- Desert Sons"
-               "- Stats Revolution"
-               ],
-        livros: ["Livros: 
-                 "-Uma Guerra Do Amanhã"
-                "],
-        contato: ["Acesse ogramac.com.br/contato],
-        cls: "clear"
-      };
+  const comandos = {
+    ajuda: [
+      "Comandos disponíveis:",
+      "- ajuda: mostra esta mensagem",
+      "- atero: sobre a Atero Aerospace",
+      "- jogos: lista seus jogos",
+      "- livros: lista seus livros",
+      "- contato: mostra formas de contato",
+      "- cls: limpa a tela",
+      "- Dica: você pode usar os comandos principais dos jogos da Bethesda. Cuidado com o 'tgm'."
+    ],
+    atero: [
+      "Atero Aerospace: Propulsão de alta atmosfera.",
+      "Digite o nome do projeto + 'documentação' para detalhes. Ex: Hipersonia Documentação.",
+      "Projetos:",
+      "- Hipersônia",
+      "- Atero Matrix",
+      "- Atero Dune"
+    ],
+    jogos: [
+      "Meus jogos. Você pode acessar a sinopse com 'Nome do jogo + sinopse'",
+      "Documentação com 'Nome do jogo + documentação'",
+      "- Desert Sons",
+      "- Stats Revolution"
+    ],
+    livros: [
+      "Livros:",
+      "- Uma Guerra do Amanhã"
+    ],
+    contato: [
+      "Contato: acesse https://ogramac.com.br/contato"
+    ],
+    cls: "clear"
+  };
 
-      function printLine(text) {
-        const line = document.createElement('div');
-        line.className = 'console-line';
-        line.textContent = text;
-        consoleEl.appendChild(line);
-        consoleEl.scrollTop = consoleEl.scrollHeight;
-      }
+  function printLine(text) {
+    const line = document.createElement('div');
+    line.className = 'console-line';
+    line.textContent = text;
+    consoleEl.appendChild(line);
+    consoleEl.scrollTop = consoleEl.scrollHeight;
+  }
 
-      inputEl.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') {
-          const input = inputEl.value.trim().toLowerCase();
-          printLine(">_ " + input);
-          inputEl.value = "";
+  inputEl.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') {
+      const input = inputEl.value.trim().toLowerCase();
+      printLine(">_ " + input);
+      inputEl.value = "";
 
-          if (comandos[input]) {
-            if (comandos[input] === "clear") {
-              consoleEl.innerHTML = "";
-            } else {
-              comandos[input].forEach
-                ? comandos[input].forEach(line => printLine(line))
-                : printLine(comandos[input]);
-            }
-          } else {
-            printLine("Comando não reconhecido. Digite 'ajuda'.");
-          }
+      if (comandos[input]) {
+        if (comandos[input] === "clear") {
+          consoleEl.innerHTML = "";
+        } else {
+          comandos[input].forEach
+            ? comandos[input].forEach(line => printLine(line))
+            : printLine(comandos[input]);
         }
-      });
-    </script>
+      } else {
+        printLine("Comando não reconhecido. Digite 'ajuda'.");
+      }
+    }
+  });
+</script>
+
   </body>
 </html>
