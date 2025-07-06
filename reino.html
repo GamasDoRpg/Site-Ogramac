@@ -84,6 +84,29 @@
   <script type="module">
     import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
 
+
+      const supabase = createClient(
+        "https://eqpibtkfeqivixnuiwpx.supabase.co", // ⬅️ substitua com sua URL
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVxcGlidGtmZXFpdml4bnVpd3B4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3NjM4MTYsImV4cCI6MjA2NzMzOTgxNn0.dbiTLVzAKhyKqEphoJIWRYG3iVCzq6uH6spaMeUz2-M"              // ⬅️ substitua com sua chave
+      );
+
+      // Função de login por link mágico
+      async function loginRei(email) {
+        if (!email) {
+          alert("Digite um e-mail válido.");
+          return;
+        }
+
+        const { error } = await supabase.auth.signInWithOtp({ email });
+
+        if (error) {
+          alert("Erro ao enviar link: " + error.message);
+        } else {
+          alert("Link enviado! Verifique seu e-mail e clique no link mágico para entrar.");
+        }
+      }
+
+
     /* ---------- CONFIGURE ---------- */
     const SUPABASE_URL  = "https://eqpibtkfeqivixnuiwpx.supabase.co";
     const SUPABASE_KEY  = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVxcGlidGtmZXFpdml4bnVpd3B4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MTc2MzgxNiwiZXhwIjoyMDY3MzM5ODE2fQ.9QVBrLI6WvEVNGhwpMmU0BiYGJHB0vvm10MytBKWs0o";
@@ -228,9 +251,16 @@
     <p>Aqui só o Rei posta. O resto comenta… com sorte.</p>
     <button id="login-rei" class="btn">Entrar como Rei</button>
   </header>
+  
 
   <!-- ===== Painel Real (escondido p/ plebe) ===== -->
   <main>
+    <section>
+      <input id="email" placeholder="Digite seu e-mail" />
+      <button onclick="loginRei(document.getElementById('email').value)">
+        Entrar como Rei
+      </button>
+    </section>
     <section id="painel-rei" style="display:none">
       <h2>📜 Novo Decreto</h2>
       <form>
