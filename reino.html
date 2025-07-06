@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>🜏 Reino do Gamas</title>
+
+  <!-- ======== ESTILO ORIGINAL ======== -->
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #0d0d0d;
+      color: #e0e0e0;
+    }
+    header {
+      background-color: #111;
+      padding: 40px 20px;
+      text-align: center;
+      border-bottom: 1px solid #333;
+    }
+    header h1 {
+      font-size: 2.8em;
+      margin: 0;
+      color: #00f7ff;
+    }
+    header p { margin-top: 10px; color: #aaa; }
+
+    main { max-width: 960px; margin: 40px auto; padding: 0 20px; }
+    section { margin-bottom: 50px; }
+
+    section h2 {
+      border-left: 5px solid #00f7ff;
+      padding-left: 10px;
+      color: #00f7ff;
+      margin-bottom: 20px;
+    }
+    a { color: #00f7ff; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .btn, .btn-link {
+      display: inline-block; padding: 8px 16px;
+      background-color: #00f7ff; color: #0d0d0d;
+      font-weight: bold; border-radius: 6px; border: none;
+      cursor: pointer; text-decoration: none;
+    }
+    .btn:hover, .btn-link:hover { background-color: #00d4d4; }
+
+    footer {
+      text-align: center; padding: 30px 0;
+      color: #666; background-color: #111; border-top: 1px solid #333;
+    }
+    .canto-inferior {
+      position: absolute; bottom: 10px; left: 10px;
+      font-size: 0.8em; color: #777;
+    }
+
+    /* ===== Feed e comentários ===== */
+    .post {
+      background-color: #111; padding: 20px;
+      border-radius: 8px; border: 1px solid #333;
+    }
+    .titulo-post { color: #00f7ff; font-size: 1.5em; margin-bottom: 10px; }
+    .data { font-size: 0.9em; color: #888; margin-bottom: 10px; }
+
+    .comentarios { margin-top: 20px; padding-left: 20px; border-left: 3px solid #333; }
+    .comentario {
+      margin-bottom: 10px; padding: 10px;
+      background-color: #1a1a1a; border-radius: 4px;
+    }
+    .comentario strong { color: #00d4d4; }
+
+    /* ===== Painel Real ===== */
+    #painel-rei { margin-bottom: 60px; padding: 20px; border: 1px solid #333; border-radius: 8px; background:#111; }
+    #painel-rei h2 { margin-top: 0; }
+    #painel-rei input, #painel-rei textarea {
+      width: 100%; margin-bottom: 10px;
+      padding: 8px; border-radius: 4px; border: 1px solid #333;
+      background:#1a1a1a; color:#e0e0e0;
+    }
+  </style>
+
+  <!-- ======== SUPABASE + APP ======== -->
+  <script type="module">
+    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+
+    /* ---------- CONFIGURE ---------- */
+    const SUPABASE_URL  = "YOUR_SUPABASE_URL";
+    const SUPABASE_KEY  = "YOUR_SUPABASE_ANON_KEY";
+    const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+    /* -------------------------------- */
+
+    /* ---------- ELEMENTOS ---------- */
+    const feed        = ()  => document.getElementById("feed");
+    const painelRei   = ()  => document.getElementById("painel-rei");
+    const btnLoginRei = ()  => document.getElementById("login-rei");
+
+    /* ---------- Estado ---------- */
+    let user = null;
+    let isKing = false;
+
+    /* ---------- Autenticação ---------- */
+    async function checaAuth() {
+      const { data } = await supabase.auth.getUser();
+      user = data.user;
+      if (user && user.app_metadata?.is_king === true) {
+        isKing = true;
+        painelRei().style.display = "block";
+        btnLoginRei().style.display = "none";
+      } else {
+        painelRei().style.display = "none";
+      }
+    }
+
+    async function loginRei() {
+      const email = prompt("E-mail do Rei para receber link mágico:");
+      if (!email) return;
+      const { error } = await supabase.auth.signInWithOtp({ email });
+      if (error) alert(error.message);
+      else alert("Link enviado! Abra seu e-mail, clique e volte.");
+    }
+
+    /* ---------- Painel do Rei ---------- */
+    async function criaPost(e) {
+      e.preventDefault();
+      const fd = new FormData(e.target);
+      const { error } = await supabase.from("posts").insert({
+        title: fd.get("title"),
+        content: fd.get("content")
+      });
+      if (error) return alert("Erro: " + error.message);
+      alert("Publicado!");
+      e.target.reset();
+    }
+
+    /* ---------- Feed ---------- */
+    async function carregaPosts() {
+      let { data: posts } = await supabase
+        .from("posts")
+        .select("id,title,content,created_at")
+        .order("created_at", { ascending: false });
+
+      feed().innerHTML = "";
+      posts.forEach(renderPost);
+
+      // realtime para novos posts
+      supabase.channel("posts-feed")
+        .on("postgres_changes",
+            { event:"INSERT", schema:"public", table:"posts" },
+            payload => renderPost(payload.new, true))
+        .subscribe();
+    }
+
+    function renderPost(p, prepend=false) {
+      const sec = document.createElement("section");
+      sec.className = "post";
+      sec.id = `post-${p.id}`;
+      sec.innerHTML = `
+        <div class="titulo-post">${p.title}</div>
+        <div class="data">${new Date(p.created_at).toLocaleString("pt-BR")}</div>
+        <p>${p.content.replace(/\n/g, "<br>")}</p>
+        <div class="comentarios" id="c-${p.id}">
+          <h3>Comentários:</h3>
+          <form data-post="${p.id}" class="form-coment">
+            <input name="author" placeholder="Seu nome" required />
+            <textarea name="content" placeholder="Diga algo..." required></textarea>
+            <button class="btn">Enviar</button>
+          </form>
+          <div class="lista-coment"></div>
+        </div>
+      `;
+      if (prepend) feed().prepend(sec); else feed().appendChild(sec);
+      carregaComentarios(p.id);
+    }
+
+    async function carregaComentarios(postId) {
+      const wrap = document.querySelector(`#c-${postId} .lista-coment`);
+      const { data } = await supabase
+        .from("comments")
+        .select("*")
+        .eq("post_id", postId)
+        .order("created_at", { ascending: true });
+      renderLista(data, wrap);
+
+      supabase.channel("comments-"+postId)
+        .on("postgres_changes",
+            { event:"INSERT", schema:"public", table:"comments", filter:`post_id=eq.${postId}` },
+            payload => renderLista([payload.new], wrap))
+        .subscribe();
+    }
+
+    function renderLista(comentarios, wrap) {
+      comentarios.forEach(c => {
+        const div = document.createElement("div");
+        div.className = "comentario";
+        div.innerHTML = `<strong>${c.author}:</strong><br>${c.content}`;
+        wrap.appendChild(div);
+      });
+    }
+
+    /* ---------- Envio de comentário ---------- */
+    document.addEventListener("submit", async (e) => {
+      if (!e.target.matches(".form-coment")) return;
+      e.preventDefault();
+      const post_id = e.target.dataset.post;
+      const fd = new FormData(e.target);
+      await supabase.from("comments").insert({
+        post_id,
+        author: fd.get("author"),
+        content: fd.get("content")
+      });
+      e.target.reset();
+    });
+
+    /* ---------- Init ---------- */
+    document.addEventListener("DOMContentLoaded", async () => {
+      await checaAuth();
+      await carregaPosts();
+      btnLoginRei().addEventListener("click", loginRei);
+      painelRei().addEventListener("submit", criaPost);
+    });
+  </script>
+</head>
+
+<body>
+  <header>
+    <h1>🜏 Reino do Gamas</h1>
+    <p>Aqui só o Rei posta. O resto comenta… com sorte.</p>
+    <button id="login-rei" class="btn">Entrar como Rei</button>
+  </header>
+
+  <!-- ===== Painel Real (escondido p/ plebe) ===== -->
+  <main>
+    <section id="painel-rei" style="display:none">
+      <h2>📜 Novo Decreto</h2>
+      <form>
+        <input name="title" placeholder="Título" required />
+        <textarea name="content" rows="6" placeholder="Conteúdo" required></textarea>
+        <button class="btn">Publicar</button>
+      </form>
+    </section>
+
+    <!-- ===== Feed ===== -->
+    <div id="feed"></div>
+  </main>
+
+  <footer>
+    &copy; 2025 Gamas — Todo o conteúdo é Lei neste Reino.
+  </footer>
+  <div class="canto-inferior">Versão 0.1a — Alfa do Reino</div>
+</body>
+</html>
