@@ -3,95 +3,127 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-<title>Editor — estilo Word</title>
+<title>Editor — estilo Word (abas)</title>
 <style>
+  /* ======= Tema Neon Dark (inspirado no seu estilo) ======= */
   :root{
-    --bg:#0f141a; --panel:#161c23; --ink:#e7eef7; --muted:#9fb0c6;
-    --paper:#ffffff; --paper-ink:#0b1220; --brand:#2f7df6; --brand-2:#1fb888;
-    --border:#e5ebf3; --shadow:0 8px 32px rgba(0,0,0,.12);
-    --btn:#f6f8fb; --btn-ink:#0c1321; --btn-active:#e6efff; --btn-bd:#d5dfec;
-    --touch:44px;
-  }
-  /* Dark mode toggled on body.dark */
-  body.dark{
-    --bg:#0a0f14; --panel:#0f151c; --ink:#dbe6f5; --muted:#86a0bf;
-    --paper:#121821; --paper-ink:#e9f1fb; --border:#1e2733;
-    --btn:#12202e; --btn-ink:#dbe6f5; --btn-active:#182a40; --btn-bd:#1b2735;
-    --shadow:0 8px 32px rgba(0,0,0,.4);
+    --bg:#0d0d0d;         /* fundo geral */
+    --panel:#111213;      /* painéis / header */
+    --ink:#e0e0e0;        /* texto padrão */
+    --muted:#9fb0c6;      /* texto secundário */
+    --paper:#ffffff;      /* cor da folha */
+    --paper-ink:#0b1220;  /* tinta da folha */
+    --brand:#00f7ff;      /* ciano neon */
+    --brand-2:#1fb888;    /* verde água */
+    --border:#2a2f36;     /* linhas UI */
+    --shadow:0 8px 32px rgba(0,0,0,.35);
+
+    --btn:#151a20;        /* botão base */
+    --btn-ink:#cfe4ff;    /* texto do botão */
+    --btn-active:#0e2633; /* botão ativo */
+    --btn-bd:#253140;     /* borda do botão */
+    --touch:44px;         /* altura mínima dos controles */
   }
 
   *{box-sizing:border-box}
   html,body{height:100%}
   body{
-    margin:0; background:var(--bg); color:var(--ink); font:16px/1.4 system-ui, -apple-system, Segoe UI, Roboto, Arial;
+    margin:0; background:var(--bg); color:var(--ink); font:16px/1.45 "Segoe UI", system-ui, -apple-system, Roboto, Arial;
   }
 
   .wrap{display:flex; flex-direction:column; min-height:100%}
-  header{
-    position:sticky; top:0; z-index:50; backdrop-filter:saturate(1.2) blur(6px);
-    background:color-mix(in srgb, var(--panel) 90%, transparent);
+
+  /* ======= App Bar + Abas (Ribbon) ======= */
+  header.ribbon-header{
+    position:sticky; top:0; z-index:50; backdrop-filter:saturate(1.2) blur(8px);
+    background:linear-gradient(180deg, #0f0f10 0%, #0d0d0d 100%);
     border-bottom:1px solid var(--border); box-shadow:var(--shadow);
   }
-  .toolbar{
-    display:flex; flex-wrap:wrap; gap:.5rem; padding:.5rem; max-width:1100px; margin:0 auto;
-    align-items:center; justify-content:flex-start;
+  .appbar{
+    display:flex; align-items:center; gap:.6rem; padding:14px 16px; max-width:1100px; margin:0 auto;
   }
-  .toolbar .group{
-    display:flex; flex-wrap:wrap; gap:.35rem; padding:.25rem .35rem; border:1px solid var(--btn-bd); border-radius:12px; background:var(--panel);
+  .brand{
+    font-weight:900; letter-spacing:.2px; font-size:1.1rem; color:var(--ink);
+    padding:.35rem .7rem; border-radius:10px; background:linear-gradient(135deg, #131a22, #0f141a);
+    box-shadow:inset 0 0 0 1px #1d2631, 0 0 0 1px #0c0f15;
   }
+  .brand::after{content:"· Word-like"; margin-left:.5rem; font-weight:600; color:#89f7ff}
+  .appbar .spacer{flex:1}
+  .quick{display:flex; gap:.4rem}
+
+  /* Tabs */
+  .tabs{display:flex; gap:.2rem; padding:0 8px; border-top:1px solid #0a0a0a; border-bottom:1px solid var(--border); max-width:1100px; margin:0 auto}
+  .tabs [role="tab"]{
+    -webkit-tap-highlight-color: transparent;
+    appearance:none; background:transparent; border:none; cursor:pointer; color:#b9d7ff;
+    padding:10px 12px; font:600 14px/1 "Segoe UI"; border-bottom:2px solid transparent; border-radius:8px 8px 0 0;
+  }
+  .tabs [role="tab"][aria-selected="true"]{
+    color:var(--brand); border-bottom-color:var(--brand);
+    background:linear-gradient(180deg, rgba(0,247,255,.08), transparent);
+  }
+  .tabs [role="tab"]:hover{color:#d2f9ff}
+
+  /* Ribbon row: sempre uma única linha por aba, com rolagem horizontal se necessário */
+  .ribbon-row{position:relative; padding:10px 8px; max-width:1100px; margin:0 auto; overflow-x:auto; overflow-y:hidden; scrollbar-width:thin}
+  .ribbon-row::-webkit-scrollbar{height:8px}
+  .ribbon-row::-webkit-scrollbar-thumb{background:linear-gradient(90deg,#00f7ff44,#1fb88844); border-radius:10px}
+  .ribbon-panel{display:none; white-space:nowrap; width:max-content; gap:.6rem}
+  .ribbon-panel.active{display:inline-flex}
+
+  /* Grupos dentro do ribbon (compactos e elegantes) */
+  .group{
+    display:inline-flex; align-items:center; gap:.35rem; padding:.35rem .45rem; border:1px solid var(--btn-bd);
+    border-radius:14px; background:linear-gradient(180deg,#0f1319,#0c1117); box-shadow:inset 0 0 0 1px #0a1219;
+  }
+  .group .label{font-size:.8rem; color:#8fb0cc; margin-right:.35rem}
+
+  /* Controles */
   button, select, input[type="color"]{
     height:var(--touch); min-width:var(--touch); border:1px solid var(--btn-bd);
-    background:var(--btn); color:var(--btn-ink); border-radius:10px; padding:.4rem .6rem; cursor:pointer;
-    font:600 14px/1 system-ui; box-shadow:none; outline-offset:2px;
+    background:var(--btn); color:var(--btn-ink); border-radius:12px; padding:.45rem .6rem; cursor:pointer; font:600 14px/1 "Segoe UI";
+    box-shadow:inset 0 0 0 1px #0b1822; outline-offset:2px;
   }
-  select{padding-right:1.8rem}
-  input[type="color"]{padding:0 .2rem; width:var(--touch)}
-  button:hover{background:color-mix(in srgb, var(--btn) 70%, white)}
+  select{padding-right:1.6rem}
+  input[type="color"]{padding:0 .2rem; width:var(--touch); border-radius:10px}
+  button:hover{background:color-mix(in srgb, var(--btn) 70%, #1d2631)}
   button.active{background:var(--btn-active); border-color:var(--brand)}
   button .icon{font-size:16px}
 
-  .brand{
-    font-weight:800; letter-spacing:.2px; color:var(--ink); padding:.25rem .6rem; margin-right:.4rem;
-  }
-  .spacer{flex:1}
-
-  /* Editor area (folha) */
+  /* ======= Área do editor (página) ======= */
   main{flex:1; display:flex}
-  .stage{width:100%; max-width:1100px; margin:16px auto; padding:0 12px}
+  .stage{width:100%; max-width:1100px; margin:20px auto; padding:0 12px}
   .page{
     background:var(--paper); color:var(--paper-ink);
-    min-height:70vh; padding:28mm 22mm; border:1px solid var(--border);
-    border-radius:14px; box-shadow:var(--shadow);
+    min-height:70vh; padding:28mm 22mm; border:1px solid #e5ebf3; border-radius:18px; box-shadow:0 18px 40px rgba(0,0,0,.35);
   }
   .page:focus{outline:none}
 
-  /* Tipografia base do documento */
+  /* Tipografia dentro do documento */
   .page{font: 16px/1.6 "Segoe UI", Roboto, Arial, system-ui}
   .page h1{font-size:2.2rem; margin:0 0 .6rem}
   .page h2{font-size:1.8rem; margin:1.2rem 0 .4rem}
   .page h3{font-size:1.4rem; margin:1rem 0 .3rem}
   .page p{margin:.5rem 0}
-  .page img{max-width:100%; height:auto; border-radius:8px}
+  .page img{max-width:100%; height:auto; border-radius:10px}
   .page blockquote{
-    border-left:4px solid #9ac1ff55; margin:1rem 0; padding:.5rem 1rem; color:#3a4a63;
-    background: #eaf2ff66; border-radius:8px;
+    border-left:4px solid #9ac1ff55; margin:1rem 0; padding:.6rem 1rem; color:#3a4a63;
+    background: #eaf2ff66; border-radius:10px;
   }
 
   /* Status bar */
   .status{
-    max-width:1100px; margin:6px auto 16px; color:var(--muted);
-    display:flex; gap:1rem; align-items:center; padding:0 12px; font-size:.95rem;
+    max-width:1100px; margin:6px auto 18px; color:#8fb0cc; display:flex; gap:1rem; align-items:center; padding:0 12px; font-size:.95rem;
   }
 
-  /* Mobile tweaks */
+  /* Mobile */
   @media (max-width: 720px){
-    .page{padding:18mm 14mm; border-radius:12px}
-    .toolbar{gap:.4rem}
+    .page{padding:18mm 14mm; border-radius:14px}
+    .brand{font-size:1rem}
     button, select{min-width:unset}
-    .brand{display:none}
   }
 
-  /* Print: remove chrome, imprimir só o conteúdo */
+  /* Print */
   @media print{
     header, .status{display:none !important}
     body{background:#fff}
@@ -101,104 +133,147 @@
 
   /* Toast */
   .toast{
-    position:fixed; bottom:16px; right:16px; background:#111a;
-    color:#fff; padding:.6rem .8rem; border-radius:10px; backdrop-filter:blur(6px);
-    opacity:0; transform:translateY(8px); transition:.25s; z-index:99
+    position:fixed; bottom:16px; right:16px; background:#06141fa6; color:#eaffff; padding:.7rem .9rem; border-radius:12px; backdrop-filter:blur(10px);
+    border:1px solid #0e2a37; box-shadow:0 10px 28px rgba(0,0,0,.35); opacity:0; transform:translateY(8px); transition:.25s; z-index:99
   }
   .toast.show{opacity:1; transform:translateY(0)}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <header>
-    <div class="toolbar" role="toolbar" aria-label="Ferramentas do editor">
+  <!-- ======= Header com Abas ======= -->
+  <header class="ribbon-header">
+    <div class="appbar">
       <div class="brand">Editor</div>
-
-      <div class="group" aria-label="Arquivo">
-        <button id="newDoc" title="Novo (Ctrl+N)">Novo</button>
-        <button id="openFile" title="Abrir arquivo HTML/TXT">Abrir</button>
-        <button id="saveDoc" title="Exportar .DOC (Ctrl+S)">Salvar .DOC</button>
-        <button id="exportHTML" title="Exportar HTML">Exportar HTML</button>
-        <button id="printDoc" title="Imprimir / PDF">Imprimir</button>
-      </div>
-
-      <div class="group" aria-label="Formato">
-        <select id="blockFormat" title="Estilo do parágrafo">
-          <option value="p">Parágrafo</option>
-          <option value="h1">Título 1</option>
-          <option value="h2">Título 2</option>
-          <option value="h3">Título 3</option>
-        </select>
-        <button data-cmd="bold" title="Negrito (Ctrl+B)"><span class="icon">B</span></button>
-        <button data-cmd="italic" title="Itálico (Ctrl+I)"><span class="icon"><i>I</i></span></button>
-        <button data-cmd="underline" title="Sublinhado (Ctrl+U)"><span class="icon"><u>U</u></span></button>
-        <button data-cmd="strikeThrough" title="Tachado"><span class="icon">S̶</span></button>
-        <button id="clearFormat" title="Limpar formatação">Limpar</button>
-      </div>
-
-      <div class="group" aria-label="Fonte/Cor">
-        <select id="fontName" title="Fonte">
-          <option value="inherit">Padrão</option>
-          <option>Arial</option><option>Georgia</option><option>"Times New Roman"</option>
-          <option>Verdana</option><option>Tahoma</option><option>"Courier New"</option>
-        </select>
-        <select id="fontSize" title="Tamanho da fonte">
-          <option value="0">Tamanho</option>
-          <option value="2">Pequeno</option>
-          <option value="3" selected>Médio</option>
-          <option value="4">Grande</option>
-          <option value="5">Muito grande</option>
-          <option value="6">Enorme</option>
-        </select>
-        <label style="display:flex; align-items:center; gap:.35rem">
-          <span style="font-size:.9rem;color:var(--muted)">Texto</span>
-          <input type="color" id="foreColor" value="#0b1220" title="Cor do texto" />
-        </label>
-        <label style="display:flex; align-items:center; gap:.35rem">
-          <span style="font-size:.9rem;color:var(--muted)">Realce</span>
-          <input type="color" id="hiliteColor" value="#fff59d" title="Marca-texto" />
-        </label>
-      </div>
-
-      <div class="group" aria-label="Parágrafo">
-        <button data-cmd="justifyLeft" title="Alinhar à esquerda">⟸</button>
-        <button data-cmd="justifyCenter" title="Centralizar">╋</button>
-        <button data-cmd="justifyRight" title="Alinhar à direita">⟹</button>
-        <button data-cmd="justifyFull" title="Justificar">≋</button>
-        <button data-cmd="insertUnorderedList" title="Lista •">• Lista</button>
-        <button data-cmd="insertOrderedList" title="Lista 1.">1. Lista</button>
-        <button data-cmd="outdent" title="Recuar">↤</button>
-        <button data-cmd="indent" title="Avançar">↦</button>
-        <button id="quote" title="Citação">“ ”</button>
-      </div>
-
-      <div class="group" aria-label="Inserir">
-        <button id="insertLink" title="Inserir link">Link</button>
-        <button id="insertImg" title="Inserir imagem">Img</button>
-      </div>
-
-      <div class="group" aria-label="Edição">
-        <button data-cmd="undo" title="Desfazer (Ctrl+Z)">↶</button>
-        <button data-cmd="redo" title="Refazer (Ctrl+Y)">↷</button>
-        <button id="findBtn" title="Buscar (Ctrl+F do navegador já funciona)">Buscar</button>
-        <button id="replaceBtn" title="Substituir">Substituir</button>
-      </div>
-
       <div class="spacer"></div>
-
-      <div class="group" aria-label="Preferências">
-        <button id="darkToggle" title="Modo escuro/claro">🌙/☀️</button>
-        <label style="display:flex;align-items:center;gap:.35rem;padding-right:.2rem">
-          <input type="checkbox" id="autosaveToggle" checked />
-          <span style="font-size:.9rem;color:var(--muted)">Autosave</span>
-        </label>
+      <div class="quick" aria-hidden="true" title="Controles rápidos (use as abas)">
+        <!-- Mantive só ícone fantasma para estética -->
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00f7ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V7"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></svg>
       </div>
+    </div>
 
-      <input id="hiddenFile" type="file" accept=".html,.htm,.txt" hidden />
-      <input id="hiddenImage" type="file" accept="image/*" hidden />
+    <nav class="tabs" role="tablist" aria-label="Abas do editor">
+      <button id="tabbtn-arquivo" role="tab" aria-selected="false" aria-controls="tab-arquivo">Arquivo</button>
+      <button id="tabbtn-inicio"  role="tab" aria-selected="true"  aria-controls="tab-inicio">Início</button>
+      <button id="tabbtn-inserir" role="tab" aria-selected="false" aria-controls="tab-inserir">Inserir</button>
+      <button id="tabbtn-revisao" role="tab" aria-selected="false" aria-controls="tab-revisao">Revisão</button>
+      <button id="tabbtn-exibir"  role="tab" aria-selected="false" aria-controls="tab-exibir">Exibir</button>
+    </nav>
+
+    <div class="ribbon-row">
+      <!-- ======= ARQUIVO ======= -->
+      <section id="tab-arquivo" class="ribbon-panel" role="tabpanel" aria-labelledby="tabbtn-arquivo">
+        <div class="group" aria-label="Arquivo">
+          <span class="label">Arquivo</span>
+          <button id="newDoc" title="Novo (Ctrl+N)">Novo</button>
+          <button id="openFile" title="Abrir arquivo HTML/TXT">Abrir</button>
+          <button id="saveDoc" title="Exportar .DOC (Ctrl+S)">Salvar .DOC</button>
+          <button id="exportHTML" title="Exportar HTML">Exportar HTML</button>
+          <button id="printDoc" title="Imprimir / PDF">Imprimir</button>
+        </div>
+        <input id="hiddenFile" type="file" accept=".html,.htm,.txt" hidden />
+      </section>
+
+      <!-- ======= INÍCIO ======= -->
+      <section id="tab-inicio" class="ribbon-panel active" role="tabpanel" aria-labelledby="tabbtn-inicio">
+        <div class="group" aria-label="Estilo do parágrafo">
+          <span class="label">Parágrafo</span>
+          <select id="blockFormat" title="Estilo do parágrafo">
+            <option value="p">Parágrafo</option>
+            <option value="h1">Título 1</option>
+            <option value="h2">Título 2</option>
+            <option value="h3">Título 3</option>
+          </select>
+        </div>
+
+        <div class="group" aria-label="Fonte">
+          <span class="label">Fonte</span>
+          <select id="fontName" title="Fonte">
+            <option value="inherit">Padrão</option>
+            <option>Arial</option><option>Georgia</option><option>"Times New Roman"</option>
+            <option>Verdana</option><option>Tahoma</option><option>"Courier New"</option>
+          </select>
+          <select id="fontSize" title="Tamanho da fonte">
+            <option value="0">Tamanho</option>
+            <option value="2">Pequeno</option>
+            <option value="3" selected>Médio</option>
+            <option value="4">Grande</option>
+            <option value="5">Muito grande</option>
+            <option value="6">Enorme</option>
+          </select>
+        </div>
+
+        <div class="group" aria-label="Cor">
+          <span class="label">Cores</span>
+          <label style="display:flex; align-items:center; gap:.35rem">
+            <span style="font-size:.85rem;color:#8fb0cc">Texto</span>
+            <input type="color" id="foreColor" value="#0b1220" title="Cor do texto" />
+          </label>
+          <label style="display:flex; align-items:center; gap:.35rem">
+            <span style="font-size:.85rem;color:#8fb0cc">Realce</span>
+            <input type="color" id="hiliteColor" value="#fff59d" title="Marca-texto" />
+          </label>
+        </div>
+
+        <div class="group" aria-label="Estilo de texto">
+          <span class="label">Estilo</span>
+          <button data-cmd="bold" title="Negrito (Ctrl+B)"><span class="icon">B</span></button>
+          <button data-cmd="italic" title="Itálico (Ctrl+I)"><span class="icon"><i>I</i></span></button>
+          <button data-cmd="underline" title="Sublinhado (Ctrl+U)"><span class="icon"><u>U</u></span></button>
+          <button data-cmd="strikeThrough" title="Tachado"><span class="icon">S̶</span></button>
+          <button id="clearFormat" title="Limpar formatação">Limpar</button>
+        </div>
+
+        <div class="group" aria-label="Parágrafo">
+          <span class="label">Parágrafo</span>
+          <button data-cmd="justifyLeft" title="Alinhar à esquerda">⟸</button>
+          <button data-cmd="justifyCenter" title="Centralizar">╋</button>
+          <button data-cmd="justifyRight" title="Alinhar à direita">⟹</button>
+          <button data-cmd="justifyFull" title="Justificar">≋</button>
+          <button data-cmd="insertUnorderedList" title="Lista •">• Lista</button>
+          <button data-cmd="insertOrderedList" title="Lista 1.">1. Lista</button>
+          <button data-cmd="outdent" title="Recuar">↤</button>
+          <button data-cmd="indent" title="Avançar">↦</button>
+          <button id="quote" title="Citação">“ ”</button>
+        </div>
+      </section>
+
+      <!-- ======= INSERIR ======= -->
+      <section id="tab-inserir" class="ribbon-panel" role="tabpanel" aria-labelledby="tabbtn-inserir">
+        <div class="group" aria-label="Inserir">
+          <span class="label">Inserir</span>
+          <button id="insertLink" title="Inserir link">Link</button>
+          <button id="insertImg" title="Inserir imagem">Imagem</button>
+        </div>
+        <input id="hiddenImage" type="file" accept="image/*" hidden />
+      </section>
+
+      <!-- ======= REVISÃO ======= -->
+      <section id="tab-revisao" class="ribbon-panel" role="tabpanel" aria-labelledby="tabbtn-revisao">
+        <div class="group" aria-label="Revisão">
+          <span class="label">Revisão</span>
+          <button data-cmd="undo" title="Desfazer (Ctrl+Z)">↶ Desfazer</button>
+          <button data-cmd="redo" title="Refazer (Ctrl+Y)">↷ Refazer</button>
+          <button id="findBtn" title="Buscar">Buscar</button>
+          <button id="replaceBtn" title="Substituir">Substituir</button>
+        </div>
+      </section>
+
+      <!-- ======= EXIBIR ======= -->
+      <section id="tab-exibir" class="ribbon-panel" role="tabpanel" aria-labelledby="tabbtn-exibir">
+        <div class="group" aria-label="Preferências">
+          <span class="label">Preferências</span>
+          <button id="darkToggle" title="Modo escuro/claro">🌙/☀️</button>
+          <label style="display:flex;align-items:center;gap:.35rem;padding-right:.2rem">
+            <input type="checkbox" id="autosaveToggle" checked />
+            <span style="font-size:.9rem;color:#8fb0cc">Autosave</span>
+          </label>
+        </div>
+      </section>
     </div>
   </header>
 
+  <!-- ======= Documento ======= -->
   <main>
     <div class="stage">
       <div id="editor" class="page" contenteditable="true" spellcheck="true">
@@ -232,7 +307,23 @@
   let autosaveOn = true;
   let saveTimer = null;
 
-  // Helpers
+  // ======= Tabs (Ribbon) =======
+  const tabButtons = document.querySelectorAll('[role="tab"]');
+  const panels = document.querySelectorAll('.ribbon-panel');
+  function activateTab(id){
+    panels.forEach(p=>p.classList.toggle('active', p.id === id));
+    tabButtons.forEach(b=>{
+      const active = b.getAttribute('aria-controls') === id;
+      b.setAttribute('aria-selected', active ? 'true' : 'false');
+    });
+  }
+  tabButtons.forEach(btn=>{
+    btn.addEventListener('click', ()=> activateTab(btn.getAttribute('aria-controls')));
+  });
+  // Inicial: Início
+  activateTab('tab-inicio');
+
+  // ======= Helpers =======
   function showToast(msg){
     toast.textContent = msg;
     toast.classList.add('show');
@@ -244,7 +335,6 @@
     refreshState();
   }
   function sanitizeHTML(html){
-    // bem simples: remove scripts/eventos por segurança
     return html.replace(/<script[\s\S]*?<\/script>/gi,'')
                .replace(/\son\w+="[^"]*"/gi,'')
                .replace(/\son\w+='[^']*'/gi,'');
@@ -253,10 +343,7 @@
   // Toolbar binding (delegação)
   document.addEventListener('click', (e)=>{
     const btn = e.target.closest('button[data-cmd]');
-    if(btn){
-      e.preventDefault();
-      cmd(btn.dataset.cmd);
-    }
+    if(btn){ e.preventDefault(); cmd(btn.dataset.cmd); }
   });
 
   // Formato de bloco (p/h1/h2/h3)
@@ -266,43 +353,33 @@
     else cmd('formatBlock', tag.toUpperCase());
   });
 
-  // Fonte e tamanho (usa execCommand por compat)
+  // Fonte e tamanho
   document.getElementById('fontName').addEventListener('change', e=>{
-    const val = e.target.value;
-    if(val === 'inherit'){ return; }
-    cmd('fontName', val);
+    const val = e.target.value; if(val === 'inherit'){ return; } cmd('fontName', val);
   });
   document.getElementById('fontSize').addEventListener('change', e=>{
-    const val = e.target.value;
-    if(val !== '0') cmd('fontSize', val); // 1-7
+    const val = e.target.value; if(val !== '0') cmd('fontSize', val);
   });
 
   // Cores
-  document.getElementById('foreColor').addEventListener('input', e=>{
-    cmd('foreColor', e.target.value);
-  });
+  document.getElementById('foreColor').addEventListener('input', e=> cmd('foreColor', e.target.value));
   document.getElementById('hiliteColor').addEventListener('input', e=>{
-    // Alguns browsers usam 'backColor' em vez de 'hiliteColor'
     if(document.queryCommandSupported('hiliteColor')) cmd('hiliteColor', e.target.value);
     else cmd('backColor', e.target.value);
   });
 
-  // Citação elegante
+  // Citação
   document.getElementById('quote').addEventListener('click', ()=>{
-    const html = '<blockquote>Texto da citação…</blockquote>';
-    insertHTMLAtCaret(html);
+    insertHTMLAtCaret('<blockquote>Texto da citação…</blockquote>');
   });
 
   // Limpar formatação
-  document.getElementById('clearFormat').addEventListener('click', ()=>{
-    cmd('removeFormat'); cmd('unlink');
-  });
+  document.getElementById('clearFormat').addEventListener('click', ()=>{ cmd('removeFormat'); cmd('unlink'); });
 
   // Inserir link
   document.getElementById('insertLink').addEventListener('click', ()=>{
     const url = prompt('URL do link (ex: https://exemplo.com):');
     if(!url) return;
-    // Se nada selecionado, cria um link com o próprio texto da URL
     if(window.getSelection().isCollapsed){
       insertHTMLAtCaret(`<a href="${escapeHtml(url)}" target="_blank" rel="noopener">${escapeHtml(url)}</a>`);
     }else{
@@ -310,16 +387,14 @@
     }
   });
 
-  // Inserir imagem (arquivo local)
+  // Inserir imagem
   const imgInput = document.getElementById('hiddenImage');
   document.getElementById('insertImg').addEventListener('click', ()=> imgInput.click());
   imgInput.addEventListener('change', ()=>{
     const file = imgInput.files[0]; imgInput.value = '';
     if(!file) return;
     const reader = new FileReader();
-    reader.onload = e=>{
-      insertHTMLAtCaret(`<img src="${e.target.result}" alt="">`);
-    };
+    reader.onload = e=> insertHTMLAtCaret(`<img src="${e.target.result}" alt="">`);
     reader.readAsDataURL(file);
   });
 
@@ -327,16 +402,11 @@
   document.getElementById('findBtn').addEventListener('click', ()=>{
     const q = prompt('Buscar por:');
     if(!q) return;
-    // Usa window.find; se não funcionar, apenas avisa
-    if(!window.find(q, false, false, true, false, false, false)){
-      showToast('Não encontrado');
-    }
+    if(!window.find(q, false, false, true, false, false, false)) showToast('Não encontrado');
   });
   document.getElementById('replaceBtn').addEventListener('click', ()=>{
-    const q = prompt('Substituir — procurar por:');
-    if(!q) return;
-    const r = prompt(`Substituir "${q}" por:`, '');
-    if(r === null) return;
+    const q = prompt('Substituir — procurar por:'); if(!q) return;
+    const r = prompt(`Substituir "${q}" por:`, ''); if(r === null) return;
     replaceAllInEditor(q, r);
   });
 
@@ -344,8 +414,7 @@
   document.getElementById('newDoc').addEventListener('click', ()=>{
     if(editor.innerText.trim().length && !confirm('Limpar documento atual?')) return;
     editor.innerHTML = '<h1>Título do Documento</h1><p>Comece a digitar…</p>';
-    persistNow();
-    showToast('Novo documento');
+    persistNow(); showToast('Novo documento');
   });
 
   const openInput = document.getElementById('hiddenFile');
@@ -356,18 +425,14 @@
     const reader = new FileReader();
     reader.onload = e=>{
       const text = e.target.result;
-      // Se é HTML, injeta; se é TXT, converte quebras de linha para <p>
       const isHtml = /<\/?[a-z][\s\S]*>/i.test(text);
       editor.innerHTML = isHtml ? sanitizeHTML(text) : toHtmlFromTxt(text);
-      persistNow();
-      showToast('Arquivo carregado');
+      persistNow(); showToast('Arquivo carregado');
     };
     reader.readAsText(file, 'utf-8');
   });
 
-  document.getElementById('saveDoc').addEventListener('click', ()=>{
-    downloadDocFile();
-  });
+  document.getElementById('saveDoc').addEventListener('click', ()=> downloadDocFile());
   document.getElementById('exportHTML').addEventListener('click', ()=>{
     const html = wrapAsStandaloneHTML(editor.innerHTML);
     downloadBlob(html, 'text/html', 'documento.html');
@@ -392,30 +457,20 @@
   function insertHTMLAtCaret(html){
     editor.focus();
     const sel = window.getSelection();
-    if(!sel || sel.rangeCount === 0){
-      editor.insertAdjacentHTML('beforeend', html);
-      return;
-    }
+    if(!sel || sel.rangeCount === 0){ editor.insertAdjacentHTML('beforeend', html); return; }
     const range = sel.getRangeAt(0);
     range.deleteContents();
     const frag = range.createContextualFragment(html);
-    const lastNode = frag.lastChild;
-    range.insertNode(frag);
-    // mover caret para depois do que foi inserido
-    if(lastNode){
-      const r = document.createRange();
-      r.setStartAfter(lastNode); r.collapse(true);
-      sel.removeAllRanges(); sel.addRange(r);
-    }
+    const lastNode = frag.lastChild; range.insertNode(frag);
+    if(lastNode){ const r = document.createRange(); r.setStartAfter(lastNode); r.collapse(true); sel.removeAllRanges(); sel.addRange(r); }
   }
 
-  // Replace all simples (não sensível a HTML; atua em innerHTML com segurança básica)
+  // Replace all simples
   function replaceAllInEditor(findStr, replaceStr){
     const esc = findStr.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const re = new RegExp(esc, 'g');
     editor.innerHTML = sanitizeHTML(editor.innerHTML).replace(re, escapeHtml(replaceStr));
-    persistNow();
-    showToast('Substituição concluída');
+    persistNow(); showToast('Substituição concluída');
   }
 
   function toHtmlFromTxt(txt){
@@ -426,7 +481,7 @@
     return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
-  // Exportar .DOC: Word abre HTML com este MIME
+  // Exportar .DOC (Word abre HTML)
   function downloadDocFile(){
     const docHTML = `
 <!DOCTYPE html>
@@ -458,9 +513,8 @@ h1{font-size:2.2rem} h2{font-size:1.8rem} h3{font-size:1.4rem}
   function downloadBlob(content, mime, filename){
     const blob = new Blob([content], {type:mime});
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = filename; document.body.appendChild(a); a.click();
-    a.remove(); URL.revokeObjectURL(url);
+    const a = document.createElement('a'); a.href = url; a.download = filename; document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
   }
 
   // Status: contagem
@@ -475,16 +529,11 @@ h1{font-size:2.2rem} h2{font-size:1.8rem} h3{font-size:1.4rem}
   }
 
   // Autosave
-  function persistNow(){
-    if(!autosaveOn) return;
-    localStorage.setItem(AUTOSAVE_KEY, editor.innerHTML);
-    savedState.textContent = 'Salvo';
-  }
+  function persistNow(){ if(!autosaveOn) return; localStorage.setItem(AUTOSAVE_KEY, editor.innerHTML); savedState.textContent = 'Salvo'; }
   editor.addEventListener('input', ()=>{
-    refreshState();
-    savedState.textContent = 'Editando…';
+    refreshState(); savedState.textContent = 'Editando…';
     if(saveTimer) clearTimeout(saveTimer);
-    saveTimer = setTimeout(()=>{ persistNow(); showToast('Salvo'); }, 1000);
+    saveTimer = setTimeout(()=>{ persistNow(); showToast('Salvo'); }, 900);
   });
 
   // Ativa/Desativa botões conforme seleção
@@ -497,19 +546,13 @@ h1{font-size:2.2rem} h2{font-size:1.8rem} h3{font-size:1.4rem}
     });
   }
   document.addEventListener('selectionchange', ()=>{
-    if(document.activeElement === editor || editor.contains(document.activeElement)){
-      updateActiveButtons();
-    }
+    if(document.activeElement === editor || editor.contains(document.activeElement)) updateActiveButtons();
   });
 
   // Atalhos
   document.addEventListener('keydown', (e)=>{
-    if((e.ctrlKey || e.metaKey) && e.key.toLowerCase()==='s'){
-      e.preventDefault(); downloadDocFile();
-    }
-    if((e.ctrlKey || e.metaKey) && e.key.toLowerCase()==='n'){
-      e.preventDefault(); document.getElementById('newDoc').click();
-    }
+    if((e.ctrlKey || e.metaKey) && e.key.toLowerCase()==='s'){ e.preventDefault(); downloadDocFile(); }
+    if((e.ctrlKey || e.metaKey) && e.key.toLowerCase()==='n'){ e.preventDefault(); document.getElementById('newDoc').click(); }
   });
 
   // Restaurar tema + autosave
@@ -518,14 +561,10 @@ h1{font-size:2.2rem} h2{font-size:1.8rem} h3{font-size:1.4rem}
     if(theme === 'dark') document.body.classList.add('dark');
 
     const saved = localStorage.getItem(AUTOSAVE_KEY);
-    if(saved){
-      editor.innerHTML = sanitizeHTML(saved);
-      showToast('Documento restaurado (autosave)');
-    }
-    refreshState();
-    savedState.textContent = 'Pronto';
+    if(saved){ editor.innerHTML = sanitizeHTML(saved); showToast('Documento restaurado (autosave)'); }
+    refreshState(); savedState.textContent = 'Pronto';
   })();
 })();
 </script>
 </body>
-  </html>
+</html>
