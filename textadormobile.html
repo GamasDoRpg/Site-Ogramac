@@ -4,67 +4,71 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <meta name="color-scheme" content="light dark" />
-<title>Editor — estilo Word (mobile otimizado)</title>
+<title>Editor — estilo Word (abas compactas)</title>
 <style>
   :root{
     --bg:#0f141a; --panel:#161c23; --ink:#e7eef7; --muted:#9fb0c6;
     --paper:#ffffff; --paper-ink:#0b1220; --brand:#2f7df6; --brand-2:#1fb888;
     --border:#e5ebf3; --shadow:0 8px 32px rgba(0,0,0,.12);
     --btn:#f6f8fb; --btn-ink:#0c1321; --btn-active:#e6efff; --btn-bd:#d5dfec;
-    --touch:44px; --radius:12px;
+    --touch:40px; --radius:12px; --ribbonH:56px;
   }
-  /* Dark mode toggled on body.dark */
   body.dark{
     --bg:#0a0f14; --panel:#0f151c; --ink:#dbe6f5; --muted:#86a0bf;
     --paper:#121821; --paper-ink:#e9f1fb; --border:#1e2733;
     --btn:#12202e; --btn-ink:#dbe6f5; --btn-active:#182a40; --btn-bd:#1b2735;
     --shadow:0 8px 32px rgba(0,0,0,.4);
   }
-
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
   html,body{height:100%}
   body{
     margin:0; background:var(--bg); color:var(--ink);
     font:16px/1.4 system-ui, -apple-system, Segoe UI, Roboto, Arial;
-    overscroll-behavior-y: none;
+    overscroll-behavior-y:none;
   }
   :focus-visible{outline:2px solid var(--brand); outline-offset:2px}
 
   .wrap{display:flex; flex-direction:column; min-height:100dvh}
-  header{
-    position:sticky; top:0; z-index:50; backdrop-filter:saturate(1.2) blur(6px);
-    background:color-mix(in srgb, var(--panel) 90%, transparent);
-    border-bottom:1px solid var(--border); box-shadow:var(--shadow);
+
+  /* ===== Ribbon com abas ===== */
+  header{position:sticky; top:0; z-index:50; background:var(--panel); box-shadow:var(--shadow);}
+  .ribbon{max-width:1100px; margin:0 auto;}
+  .tablist{display:flex; gap:.25rem; align-items:center; padding:.35rem .5rem; border-bottom:1px solid var(--border);}
+  .tablist .brand{font-weight:800; letter-spacing:.2px; margin-right:.25rem; padding:.2rem .5rem}
+  .tablist button[role="tab"]{
+    background:transparent; border:0; color:var(--muted); padding:.45rem .7rem; border-radius:8px; cursor:pointer; font:600 14px/1 system-ui;
   }
-  .toolbar{
-    display:flex; flex-wrap:wrap; gap:.5rem; padding:.5rem; max-width:1100px; margin:0 auto;
-    align-items:center; justify-content:flex-start;
+  .tablist button[aria-selected="true"]{color:var(--ink); background:color-mix(in srgb, var(--btn) 85%, transparent); border:1px solid var(--btn-bd)}
+  .tab-actions{margin-left:auto; display:flex; align-items:center; gap:.4rem}
+  .tab-actions button, .tab-actions label{height:var(--touch)}
+
+  /* Faixa de comandos (uma linha por aba) */
+  .tabpanes{position:relative;}
+  .ribbon-row{
+    height:var(--ribbonH); display:flex; align-items:center; gap:.4rem; padding:.35rem .5rem;
+    overflow-x:auto; overflow-y:hidden; border-bottom:1px solid var(--border);
+    background:color-mix(in srgb, var(--panel) 92%, transparent);
   }
-  .toolbar .group{
-    display:flex; flex-wrap:wrap; gap:.35rem; padding:.25rem .35rem; border:1px solid var(--btn-bd); border-radius:12px; background:var(--panel);
-  }
+  .ribbon-row .group{display:flex; gap:.3rem; padding:.25rem; background:var(--panel); border:1px solid var(--btn-bd); border-radius:10px; flex:0 0 auto}
+
   button, select, input[type="color"]{
-    height:var(--touch); min-width:var(--touch); border:1px solid var(--btn-bd);
-    background:var(--btn); color:var(--btn-ink); border-radius:10px; padding:.4rem .6rem; cursor:pointer;
-    font:600 14px/1 system-ui; box-shadow:none; outline-offset:2px; touch-action: manipulation;
+    height:var(--touch); min-width:40px; border:1px solid var(--btn-bd);
+    background:var(--btn); color:var(--btn-ink); border-radius:10px; padding:.35rem .55rem; cursor:pointer;
+    font:600 14px/1 system-ui; outline-offset:2px; touch-action:manipulation;
   }
   button:hover{background:color-mix(in srgb, var(--btn) 70%, white)}
   button.active{background:var(--btn-active); border-color:var(--brand)}
-  button .icon{font-size:16px}
-  select{padding-right:1.6rem}
-  input[type="color"]{padding:0 .2rem; width:var(--touch)}
+  select{padding-right:1.4rem}
+  input[type="color"]{padding:0 .2rem; width:40px}
 
-  .brand{font-weight:800; letter-spacing:.2px; color:var(--ink); padding:.25rem .6rem; margin-right:.4rem}
-  .spacer{flex:1}
-
-  /* Editor area */
+  /* Editor */
   main{flex:1; display:flex}
   .stage{width:100%; max-width:1100px; margin:16px auto; padding:0 12px}
   .page{
     background:var(--paper); color:var(--paper-ink);
     min-height:70dvh; padding:28mm 22mm; border:1px solid var(--border);
     border-radius:14px; box-shadow:var(--shadow);
-    font: 16px/1.6 "Segoe UI", Roboto, Arial, system-ui;
+    font:16px/1.6 "Segoe UI", Roboto, Arial, system-ui;
   }
   .page:focus{outline:none}
   .page h1{font-size:2.2rem; margin:0 0 .6rem}
@@ -74,22 +78,14 @@
   .page img{max-width:100%; height:auto; border-radius:8px}
   .page blockquote{border-left:4px solid #9ac1ff55; margin:1rem 0; padding:.5rem 1rem; color:#3a4a63; background:#eaf2ff66; border-radius:8px}
 
-  /* Status bar */
   .status{max-width:1100px; margin:6px auto 16px; color:var(--muted); display:flex; gap:1rem; align-items:center; padding:0 12px; font-size:.95rem}
 
-  /* === MOBILE TWEAKS === */
-  @media (max-width: 720px){
-    .toolbar{gap:.4rem; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type:x mandatory}
-    .toolbar .group{scroll-snap-align: start; flex-wrap:nowrap}
-    .brand{display:none}
-    .page{
-      /* tipografia e margens responsivas para caber na tela */
-      font-size:clamp(15px, 3.9vw, 18px);
-      padding:clamp(16px, 5vw, 24px) clamp(14px, 4.5vw, 20px);
-      border-radius:12px;
-      min-height:calc(100dvh - 170px); /* espaço para header + barra inferior */
-    }
-    button, select{min-width:unset}
+  /* Mobile */
+  @media (max-width:720px){
+    .page{font-size:clamp(15px,3.9vw,18px); padding:clamp(16px,5vw,24px) clamp(14px,4.5vw,20px); min-height:calc(100dvh - (var(--ribbonH) + 130px));}
+    .tablist{overflow-x:auto}
+    .ribbon-row{scroll-snap-type:x mandatory}
+    .ribbon-row .group{scroll-snap-align:start}
   }
 
   /* Print */
@@ -104,114 +100,127 @@
   .toast{position:fixed; bottom:16px; right:16px; background:#111a; color:#fff; padding:.6rem .8rem; border-radius:10px; backdrop-filter:blur(6px); opacity:0; transform:translateY(8px); transition:.25s; z-index:99}
   .toast.show{opacity:1; transform:translateY(0)}
 
-  /* Mobile quick toolbar (bottom) */
-  .mb-toolbar{
-    position:fixed; left:0; right:0; bottom:0; z-index:60;
-    display:none; gap:.4rem; align-items:center; overflow-x:auto;
-    background:color-mix(in srgb, var(--panel) 92%, transparent);
-    border-top:1px solid var(--border); box-shadow:var(--shadow);
-    padding:.4rem .5rem calc(.5rem + env(safe-area-inset-bottom));
-  }
+  /* Barra rápida mobile */
+  .mb-toolbar{position:fixed; left:0; right:0; bottom:0; z-index:60; display:none; gap:.4rem; align-items:center; overflow-x:auto; background:color-mix(in srgb, var(--panel) 92%, transparent); border-top:1px solid var(--border); box-shadow:var(--shadow); padding:.4rem .5rem calc(.5rem + env(safe-area-inset-bottom));}
   .mb-toolbar.show{display:flex}
   .mb-toolbar .group{display:flex; gap:.25rem; padding:.25rem; background:var(--panel); border:1px solid var(--btn-bd); border-radius:var(--radius)}
   .mb-toolbar button{height:40px; min-width:40px; font-size:15px}
   @media (min-width:721px){.mb-toolbar{display:none !important}}
-
-  /* Motion preferences */
-  @media (prefers-reduced-motion: reduce){
-    *{scroll-behavior:auto}
-    .toast, header{backdrop-filter:none}
-  }
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
-    <div class="toolbar" role="toolbar" aria-label="Ferramentas do editor">
-      <div class="brand">Editor</div>
-
-      <div class="group" aria-label="Arquivo">
-        <button id="newDoc" title="Novo (Ctrl+N)">Novo</button>
-        <button id="openFile" title="Abrir arquivo HTML/TXT">Abrir</button>
-        <button id="saveDoc" title="Exportar .DOC (Ctrl+S)">Salvar .DOC</button>
-        <button id="exportHTML" title="Exportar HTML">Exportar HTML</button>
-        <button id="printDoc" title="Imprimir / PDF">Imprimir</button>
+    <div class="ribbon">
+      <!-- Abas -->
+      <div class="tablist" role="tablist" aria-label="Abas do editor">
+        <div class="brand">Editor</div>
+        <button role="tab" class="tab" data-tab="home" aria-selected="true">Página inicial</button>
+        <button role="tab" class="tab" data-tab="insert">Inserir</button>
+        <button role="tab" class="tab" data-tab="layout">Layout</button>
+        <button role="tab" class="tab" data-tab="view">Exibir</button>
+        <button role="tab" class="tab" data-tab="file">Arquivo</button>
+        <div class="tab-actions">
+          <button id="darkToggle" title="Modo escuro/claro">🌙/☀️</button>
+          <label style="display:flex;align-items:center;gap:.35rem;padding-right:.2rem">
+            <input type="checkbox" id="autosaveToggle" checked />
+            <span style="font-size:.9rem;color:var(--muted)">Autosave</span>
+          </label>
+        </div>
       </div>
 
-      <div class="group" aria-label="Formato">
-        <select id="blockFormat" title="Estilo do parágrafo">
-          <option value="p">Parágrafo</option>
-          <option value="h1">Título 1</option>
-          <option value="h2">Título 2</option>
-          <option value="h3">Título 3</option>
-        </select>
-        <button data-cmd="bold" title="Negrito (Ctrl+B)"><span class="icon">B</span></button>
-        <button data-cmd="italic" title="Itálico (Ctrl+I)"><span class="icon"><i>I</i></span></button>
-        <button data-cmd="underline" title="Sublinhado (Ctrl+U)"><span class="icon"><u>U</u></span></button>
-        <button data-cmd="strikeThrough" title="Tachado"><span class="icon">S̶</span></button>
-        <button id="clearFormat" title="Limpar formatação">Limpar</button>
+      <!-- Faixas (uma linha cada) -->
+      <div class="tabpanes">
+        <!-- HOME -->
+        <div class="ribbon-row" data-pane="home">
+          <div class="group" aria-label="Parágrafo">
+            <button data-cmd="bold" title="Negrito (Ctrl+B)">B</button>
+            <button data-cmd="italic" title="Itálico (Ctrl+I)"><i>I</i></button>
+            <button data-cmd="underline" title="Sublinhado (Ctrl+U)"><u>U</u></button>
+            <button data-cmd="strikeThrough" title="Tachado">S̶</button>
+          </div>
+          <div class="group" aria-label="Fonte/Cor">
+            <select id="fontName" title="Fonte">
+              <option value="inherit">Padrão</option>
+              <option>Arial</option><option>Georgia</option><option>"Times New Roman"</option>
+              <option>Verdana</option><option>Tahoma</option><option>"Courier New"</option>
+            </select>
+            <select id="fontSize" title="Tamanho da fonte">
+              <option value="0">Tamanho</option>
+              <option value="2">Pequeno</option>
+              <option value="3" selected>Médio</option>
+              <option value="4">Grande</option>
+              <option value="5">Muito grande</option>
+              <option value="6">Enorme</option>
+            </select>
+            <input type="color" id="foreColor" value="#0b1220" title="Cor do texto" />
+            <input type="color" id="hiliteColor" value="#fff59d" title="Marca-texto" />
+          </div>
+          <div class="group" aria-label="Alinhamento e lista">
+            <button data-cmd="justifyLeft" title="Esquerda">⟸</button>
+            <button data-cmd="justifyCenter" title="Centro">╋</button>
+            <button data-cmd="justifyRight" title="Direita">⟹</button>
+            <button data-cmd="justifyFull" title="Justificar">≋</button>
+            <button data-cmd="insertUnorderedList" title="Lista •">•</button>
+            <button data-cmd="insertOrderedList" title="Lista 1.">1.</button>
+            <button data-cmd="outdent" title="Recuar">↤</button>
+            <button data-cmd="indent" title="Avançar">↦</button>
+            <button id="quote" title="Citação">“ ”</button>
+            <button id="clearFormat" title="Limpar formatação">Limpar</button>
+          </div>
+          <div class="group" aria-label="Bloco">
+            <select id="blockFormat" title="Estilo do parágrafo">
+              <option value="p">Parágrafo</option>
+              <option value="h1">Título 1</option>
+              <option value="h2">Título 2</option>
+              <option value="h3">Título 3</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- INSERT -->
+        <div class="ribbon-row" data-pane="insert" hidden>
+          <div class="group" aria-label="Inserir">
+            <button id="insertLink" title="Inserir link">🔗 Link</button>
+            <button id="insertImg" title="Inserir imagem">🖼️ Imagem</button>
+            <input id="hiddenImage" type="file" accept="image/*" hidden />
+          </div>
+          <div class="group" aria-label="Edição">
+            <button data-cmd="undo" title="Desfazer (Ctrl+Z)">↶</button>
+            <button data-cmd="redo" title="Refazer (Ctrl+Y)">↷</button>
+            <button id="findBtn" title="Buscar (Ctrl+F do navegador já funciona)">Buscar</button>
+            <button id="replaceBtn" title="Substituir">Substituir</button>
+          </div>
+        </div>
+
+        <!-- LAYOUT -->
+        <div class="ribbon-row" data-pane="layout" hidden>
+          <div class="group" aria-label="Página">
+            <button id="narrowMargins" title="Margens estreitas">Margem−</button>
+            <button id="wideMargins" title="Margens largas">Margem+</button>
+            <button id="togglePaperTheme" title="Cor do papel">🗒️ Papel</button>
+          </div>
+        </div>
+
+        <!-- VIEW -->
+        <div class="ribbon-row" data-pane="view" hidden>
+          <div class="group" aria-label="Exibir">
+            <button id="printDoc" title="Imprimir / PDF">Imprimir</button>
+            <button id="toggleStatus" title="Alternar barra de status">Status</button>
+          </div>
+        </div>
+
+        <!-- FILE -->
+        <div class="ribbon-row" data-pane="file" hidden>
+          <div class="group" aria-label="Arquivo">
+            <button id="newDoc" title="Novo (Ctrl+N)">Novo</button>
+            <button id="openFile" title="Abrir HTML/TXT">Abrir</button>
+            <input id="hiddenFile" type="file" accept=".html,.htm,.txt" hidden />
+            <button id="saveDoc" title="Exportar .DOC (Ctrl+S)">Salvar .DOC</button>
+            <button id="exportHTML" title="Exportar HTML">Exportar HTML</button>
+          </div>
+        </div>
       </div>
-
-      <div class="group" aria-label="Fonte/Cor">
-        <select id="fontName" title="Fonte">
-          <option value="inherit">Padrão</option>
-          <option>Arial</option><option>Georgia</option><option>"Times New Roman"</option>
-          <option>Verdana</option><option>Tahoma</option><option>"Courier New"</option>
-        </select>
-        <select id="fontSize" title="Tamanho da fonte">
-          <option value="0">Tamanho</option>
-          <option value="2">Pequeno</option>
-          <option value="3" selected>Médio</option>
-          <option value="4">Grande</option>
-          <option value="5">Muito grande</option>
-          <option value="6">Enorme</option>
-        </select>
-        <label style="display:flex; align-items:center; gap:.35rem">
-          <span style="font-size:.9rem;color:var(--muted)">Texto</span>
-          <input type="color" id="foreColor" value="#0b1220" title="Cor do texto" />
-        </label>
-        <label style="display:flex; align-items:center; gap:.35rem">
-          <span style="font-size:.9rem;color:var(--muted)">Realce</span>
-          <input type="color" id="hiliteColor" value="#fff59d" title="Marca-texto" />
-        </label>
-      </div>
-
-      <div class="group" aria-label="Parágrafo">
-        <button data-cmd="justifyLeft" title="Alinhar à esquerda">⟸</button>
-        <button data-cmd="justifyCenter" title="Centralizar">╋</button>
-        <button data-cmd="justifyRight" title="Alinhar à direita">⟹</button>
-        <button data-cmd="justifyFull" title="Justificar">≋</button>
-        <button data-cmd="insertUnorderedList" title="Lista •">• Lista</button>
-        <button data-cmd="insertOrderedList" title="Lista 1.">1. Lista</button>
-        <button data-cmd="outdent" title="Recuar">↤</button>
-        <button data-cmd="indent" title="Avançar">↦</button>
-        <button id="quote" title="Citação">“ ”</button>
-      </div>
-
-      <div class="group" aria-label="Inserir">
-        <button id="insertLink" title="Inserir link">Link</button>
-        <button id="insertImg" title="Inserir imagem">Img</button>
-      </div>
-
-      <div class="group" aria-label="Edição">
-        <button data-cmd="undo" title="Desfazer (Ctrl+Z)">↶</button>
-        <button data-cmd="redo" title="Refazer (Ctrl+Y)">↷</button>
-        <button id="findBtn" title="Buscar (Ctrl+F do navegador já funciona)">Buscar</button>
-        <button id="replaceBtn" title="Substituir">Substituir</button>
-      </div>
-
-      <div class="spacer"></div>
-
-      <div class="group" aria-label="Preferências">
-        <button id="darkToggle" title="Modo escuro/claro">🌙/☀️</button>
-        <label style="display:flex;align-items:center;gap:.35rem;padding-right:.2rem">
-          <input type="checkbox" id="autosaveToggle" checked />
-          <span style="font-size:.9rem;color:var(--muted)">Autosave</span>
-        </label>
-      </div>
-
-      <input id="hiddenFile" type="file" accept=".html,.htm,.txt" hidden />
-      <input id="hiddenImage" type="file" accept="image/*" hidden />
     </div>
   </header>
 
@@ -232,7 +241,7 @@
   </main>
 </div>
 
-<!-- Barra rápida para mobile -->
+<!-- Barra rápida mobile -->
 <div class="mb-toolbar" id="mbToolbar" role="toolbar" aria-label="Ferramentas rápidas">
   <div class="group">
     <button data-cmd="undo" title="Desfazer">↶</button>
@@ -268,32 +277,30 @@
   const THEME_KEY = 'richword.theme';
   let autosaveOn = true; let saveTimer = null;
 
-  // Helpers
-  function showToast(msg){
-    toast.textContent = msg; toast.classList.add('show');
-    setTimeout(()=>toast.classList.remove('show'), 1600);
+  /* ===== Tabs ===== */
+  const tabs = document.querySelectorAll('.tablist .tab');
+  const panes = document.querySelectorAll('.ribbon-row');
+  function showTab(name){
+    tabs.forEach(t=> t.setAttribute('aria-selected', String(t.dataset.tab===name)));
+    panes.forEach(p=> p.hidden = p.dataset.pane !== name);
   }
-  function cmd(command, value=null){
-    try{ document.execCommand(command, false, value); }catch{}
-    editor.focus();
-    refreshState();
-  }
-  function sanitizeHTML(html){
-    return html.replace(/<script[\s\S]*?<\/script>/gi,'')
-               .replace(/\son\w+="[^"]*"/gi,'')
-               .replace(/\son\w+='[^']*'/gi,'');
-  }
-  function escapeHtml(s){
-    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  }
+  document.querySelector('.tablist').addEventListener('click', (e)=>{
+    const btn = e.target.closest('.tab'); if(!btn) return;
+    showTab(btn.dataset.tab);
+  });
 
-  // Toolbar delegation (top)
+  // Helpers
+  function showToast(msg){ toast.textContent = msg; toast.classList.add('show'); setTimeout(()=>toast.classList.remove('show'), 1500); }
+  function cmd(command, value=null){ try{ document.execCommand(command, false, value); }catch{} editor.focus(); refreshState(); }
+  function sanitizeHTML(html){ return html.replace(/<script[\s\S]*?<\/script>/gi,'').replace(/\son\w+="[^"]*"/gi,'').replace(/\son\w+='[^']*'/gi,''); }
+  function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+  // Delegação global de comandos
   document.addEventListener('click', (e)=>{
-    const btn = e.target.closest('button[data-cmd]');
-    if(btn){ e.preventDefault(); cmd(btn.dataset.cmd); }
+    const btn = e.target.closest('button[data-cmd]'); if(btn){ e.preventDefault(); cmd(btn.dataset.cmd); }
   }, {passive:true});
 
-  // Mobile toolbar delegation (bottom)
+  // Mobile quickbar
   mbToolbar.addEventListener('click', (e)=>{
     const btn = e.target.closest('button'); if(!btn) return;
     const command = btn.dataset.cmd; const action = btn.dataset.action;
@@ -304,7 +311,7 @@
 
   // Block format
   document.getElementById('blockFormat').addEventListener('change', e=>{
-    const tag = e.target.value; if(tag === 'p'){ cmd('formatBlock', 'P'); } else cmd('formatBlock', tag.toUpperCase());
+    const tag = e.target.value; cmd('formatBlock', tag==='p'?'P':tag.toUpperCase());
   });
 
   // Font & size
@@ -313,9 +320,7 @@
 
   // Colors
   document.getElementById('foreColor').addEventListener('input', e=> cmd('foreColor', e.target.value));
-  document.getElementById('hiliteColor').addEventListener('input', e=>{
-    if(document.queryCommandSupported('hiliteColor')) cmd('hiliteColor', e.target.value); else cmd('backColor', e.target.value);
-  });
+  document.getElementById('hiliteColor').addEventListener('input', e=>{ if(document.queryCommandSupported('hiliteColor')) cmd('hiliteColor', e.target.value); else cmd('backColor', e.target.value); });
 
   // Quote
   document.getElementById('quote').addEventListener('click', ()=> insertHTMLAtCaret('<blockquote>Texto da citação…</blockquote>'));
@@ -323,41 +328,37 @@
   // Clear
   document.getElementById('clearFormat').addEventListener('click', ()=>{ cmd('removeFormat'); cmd('unlink'); });
 
-  // Insert link (reutilizável)
+  // Inserir link
   function handleInsertLink(){
     const url = prompt('URL do link (ex: https://exemplo.com):'); if(!url) return;
-    if(window.getSelection().isCollapsed){
-      insertHTMLAtCaret(`<a href="${escapeHtml(url)}" target="_blank" rel="noopener">${escapeHtml(url)}</a>`);
-    }else{ cmd('createLink', url); }
+    if(window.getSelection().isCollapsed){ insertHTMLAtCaret(`<a href="${escapeHtml(url)}" target="_blank" rel="noopener">${escapeHtml(url)}</a>`); }
+    else{ cmd('createLink', url); }
   }
-  document.getElementById('insertLink').addEventListener('click', handleInsertLink);
+  document.getElementById('insertLink')?.addEventListener('click', handleInsertLink);
 
-  // Insert image (reutilizável)
+  // Inserir imagem
   const imgInput = document.getElementById('hiddenImage');
-  function handleInsertImage(){ imgInput.click(); }
-  document.getElementById('insertImg').addEventListener('click', handleInsertImage);
-  imgInput.addEventListener('change', ()=>{
+  function handleInsertImage(){ imgInput?.click(); }
+  document.getElementById('insertImg')?.addEventListener('click', handleInsertImage);
+  imgInput?.addEventListener('change', ()=>{
     const file = imgInput.files[0]; imgInput.value=''; if(!file) return;
     const reader = new FileReader();
     reader.onload = e=> insertHTMLAtCaret(`<img src="${e.target.result}" alt="" loading="lazy" decoding="async">`);
     reader.readAsDataURL(file);
   });
 
-  // Find / Replace
-  document.getElementById('findBtn').addEventListener('click', ()=>{
-    const q = prompt('Buscar por:'); if(!q) return;
-    if(!window.find(q, false, false, true, false, false, false)) showToast('Não encontrado');
+  // Buscar / Substituir
+  document.getElementById('findBtn')?.addEventListener('click', ()=>{
+    const q = prompt('Buscar por:'); if(!q) return; if(!window.find(q, false, false, true, false, false, false)) showToast('Não encontrado');
   });
-  document.getElementById('replaceBtn').addEventListener('click', ()=>{
-    const q = prompt('Substituir — procurar por:'); if(!q) return;
-    const r = prompt(`Substituir "${q}" por:`, ''); if(r===null) return;
-    replaceAllInEditor(q, r);
+  document.getElementById('replaceBtn')?.addEventListener('click', ()=>{
+    const q = prompt('Substituir — procurar por:'); if(!q) return; const r = prompt(`Substituir "${q}" por:`, ''); if(r===null) return; replaceAllInEditor(q, r);
   });
 
-  // File ops
+  // Arquivo: novo/abrir/salvar/exportar/imprimir
   const openInput = document.getElementById('hiddenFile');
-  document.getElementById('openFile').addEventListener('click', ()=> openInput.click());
-  openInput.addEventListener('change', ()=>{
+  document.getElementById('openFile')?.addEventListener('click', ()=> openInput?.click());
+  openInput?.addEventListener('change', ()=>{
     const file = openInput.files[0]; openInput.value=''; if(!file) return;
     const reader = new FileReader(); reader.onload = e=>{
       const text = e.target.result; const isHtml = /<\/?[a-z][\s\S]*>/i.test(text);
@@ -366,36 +367,33 @@
     }; reader.readAsText(file, 'utf-8');
   });
 
-  document.getElementById('newDoc').addEventListener('click', ()=>{
+  document.getElementById('newDoc')?.addEventListener('click', ()=>{
     if(editor.innerText.trim().length && !confirm('Limpar documento atual?')) return;
     editor.innerHTML = '<h1>Título do Documento</h1><p>Comece a digitar…</p>';
     persistNow(); showToast('Novo documento');
   });
 
-  document.getElementById('saveDoc').addEventListener('click', ()=> downloadDocFile());
-  document.getElementById('exportHTML').addEventListener('click', ()=>{
+  document.getElementById('saveDoc')?.addEventListener('click', ()=> downloadDocFile());
+  document.getElementById('exportHTML')?.addEventListener('click', ()=>{
     const html = wrapAsStandaloneHTML(editor.innerHTML); downloadBlob(html, 'text/html', 'documento.html');
   });
-  document.getElementById('printDoc').addEventListener('click', ()=> window.print());
+  document.getElementById('printDoc')?.addEventListener('click', ()=> window.print());
 
-  // Prefs
+  // Preferências
   const autosaveToggle = document.getElementById('autosaveToggle');
-  autosaveToggle.addEventListener('change', ()=>{
-    autosaveOn = autosaveToggle.checked; if(autosaveOn) persistNow();
-    savedState.textContent = autosaveOn ? 'Autosave ligado' : 'Autosave desligado';
+  autosaveToggle?.addEventListener('change', ()=>{
+    autosaveOn = autosaveToggle.checked; if(autosaveOn) persistNow(); savedState.textContent = autosaveOn ? 'Autosave ligado' : 'Autosave desligado';
   });
   const darkToggle = document.getElementById('darkToggle');
-  darkToggle.addEventListener('click', ()=>{
-    document.body.classList.toggle('dark');
-    localStorage.setItem(THEME_KEY, document.body.classList.contains('dark')?'dark':'light');
+  darkToggle?.addEventListener('click', ()=>{
+    document.body.classList.toggle('dark'); localStorage.setItem(THEME_KEY, document.body.classList.contains('dark')?'dark':'light');
   });
 
   // HTML at caret
   function insertHTMLAtCaret(html){
     editor.focus(); const sel = window.getSelection();
     if(!sel || sel.rangeCount === 0){ editor.insertAdjacentHTML('beforeend', html); return; }
-    const range = sel.getRangeAt(0); range.deleteContents();
-    const frag = range.createContextualFragment(html); const lastNode = frag.lastChild; range.insertNode(frag);
+    const range = sel.getRangeAt(0); range.deleteContents(); const frag = range.createContextualFragment(html); const lastNode = frag.lastChild; range.insertNode(frag);
     if(lastNode){ const r = document.createRange(); r.setStartAfter(lastNode); r.collapse(true); sel.removeAllRanges(); sel.addRange(r); }
   }
 
@@ -412,17 +410,13 @@
     return safe || '<p></p>';
   }
 
-  // Export .DOC (Word aceita HTML)
+  // Export .DOC
   function downloadDocFile(){
-    const docHTML = `<!DOCTYPE html>
-<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
-<head><meta charset="utf-8"><title>Documento</title>
-<style>body{font-family:"Times New Roman",serif; color:#111; line-height:1.5} img{max-width:100%; height:auto} blockquote{border-left:4px solid #9ac1ff; padding:.5rem 1rem; background:#eef5ff} h1{font-size:28pt} h2{font-size:22pt} h3{font-size:18pt} p{font-size:12pt}</style>
-</head><body>${editor.innerHTML}</body></html>`;
+    const docHTML = `<!DOCTYPE html><html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><title>Documento</title><style>body{font-family:\"Times New Roman\",serif; color:#111; line-height:1.5} img{max-width:100%; height:auto} blockquote{border-left:4px solid #9ac1ff; padding:.5rem 1rem; background:#eef5ff} h1{font-size:28pt} h2{font-size:22pt} h3{font-size:18pt} p{font-size:12pt}</style></head><body>${editor.innerHTML}</body></html>`;
     downloadBlob(docHTML, 'application/msword', 'documento.doc');
   }
   function wrapAsStandaloneHTML(inner){
-    return `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Documento exportado</title><style>body{font:16px/1.6 Segoe UI, Roboto, Arial; color:#0b1220; padding:28mm 22mm; background:#fff} img{max-width:100%;height:auto} blockquote{border-left:4px solid #9ac1ff; padding:.5rem 1rem; background:#eef5ff} h1{font-size:2.2rem} h2{font-size:1.8rem} h3{font-size:1.4rem}</style></head><body>${inner}</body></html>`;
+    return `<!doctype html><html lang=\"pt-BR\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>Documento exportado</title><style>body{font:16px/1.6 Segoe UI, Roboto, Arial; color:#0b1220; padding:28mm 22mm; background:#fff} img{max-width:100%;height:auto} blockquote{border-left:4px solid #9ac1ff; padding:.5rem 1rem; background:#eef5ff} h1{font-size:2.2rem} h2{font-size:1.8rem} h3{font-size:1.4rem}</style></head><body>${inner}</body></html>`;
   }
   function downloadBlob(content, mime, filename){
     const blob = new Blob([content], {type:mime}); const url = URL.createObjectURL(blob);
@@ -440,68 +434,51 @@
     statusR.textContent = `${mins} min de leitura`;
   }
 
-  // Autosave (debounced)
+  // Autosave
   function persistNow(){ if(!autosaveOn) return; localStorage.setItem(AUTOSAVE_KEY, editor.innerHTML); savedState.textContent='Salvo'; }
-  editor.addEventListener('input', ()=>{
-    refreshState(); savedState.textContent='Editando…';
-    if(saveTimer) clearTimeout(saveTimer);
-    saveTimer = setTimeout(()=>{ persistNow(); showToast('Salvo'); }, 800);
-  });
+  editor.addEventListener('input', ()=>{ refreshState(); savedState.textContent='Editando…'; if(saveTimer) clearTimeout(saveTimer); saveTimer = setTimeout(()=>{ persistNow(); showToast('Salvo'); }, 800); });
 
-  // Active buttons state
+  // Botões ativos
   function updateActiveButtons(){
     const map = ['bold','italic','underline','strikeThrough','justifyLeft','justifyCenter','justifyRight','justifyFull'];
-    map.forEach(cmdName=>{
-      document.querySelectorAll(`button[data-cmd="${cmdName}"]`).forEach(btn=>{
-        try{ btn.classList.toggle('active', document.queryCommandState(cmdName)); }catch{}
-      });
-    });
+    map.forEach(cmdName=>{ document.querySelectorAll(`button[data-cmd="${cmdName}"]`).forEach(btn=>{ try{ btn.classList.toggle('active', document.queryCommandState(cmdName)); }catch{} }); });
   }
-  document.addEventListener('selectionchange', ()=>{
-    if(document.activeElement === editor || editor.contains(document.activeElement)) updateActiveButtons();
-  });
+  document.addEventListener('selectionchange', ()=>{ if(document.activeElement === editor || editor.contains(document.activeElement)) updateActiveButtons(); });
 
-  // Shortcuts
+  // Atalhos
   document.addEventListener('keydown', (e)=>{
     if((e.ctrlKey || e.metaKey) && e.key.toLowerCase()==='s'){ e.preventDefault(); downloadDocFile(); }
-    if((e.ctrlKey || e.metaKey) && e.key.toLowerCase()==='n'){ e.preventDefault(); document.getElementById('newDoc').click(); }
+    if((e.ctrlKey || e.metaKey) && e.key.toLowerCase()==='n'){ e.preventDefault(); document.getElementById('newDoc')?.click(); }
   });
 
-  // Mobile: mostrar/ocultar barra inferior quando editor ganha foco
+  // Mobile: quick bar ao focar
   const mqMobile = window.matchMedia('(max-width: 720px)');
   function toggleMB(show){ mbToolbar.classList.toggle('show', !!show && mqMobile.matches); fixToolbarForKeyboard(); recalcPageMinHeight(); }
   editor.addEventListener('focusin', ()=> toggleMB(true));
   editor.addEventListener('blur', ()=> setTimeout(()=>{ if(!document.activeElement || !document.activeElement.closest('.mb-toolbar')) toggleMB(false); }, 150));
 
-  // Ajuste para teclado virtual (VisualViewport)
-  function fixToolbarForKeyboard(){
-    if(!window.visualViewport) return;
-    const vv = window.visualViewport;
-    const inset = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
-    mbToolbar.style.bottom = inset + 'px';
-  }
-  if(window.visualViewport){
-    visualViewport.addEventListener('resize', fixToolbarForKeyboard);
-    visualViewport.addEventListener('scroll', fixToolbarForKeyboard);
-  }
+  // Teclado virtual
+  function fixToolbarForKeyboard(){ if(!window.visualViewport) return; const vv = window.visualViewport; const inset = Math.max(0, window.innerHeight - vv.height - vv.offsetTop); mbToolbar.style.bottom = inset + 'px'; }
+  if(window.visualViewport){ visualViewport.addEventListener('resize', fixToolbarForKeyboard); visualViewport.addEventListener('scroll', fixToolbarForKeyboard); }
 
-  // Recalcular altura mínima da página para não ficar escondida atrás das barras
-  function recalcPageMinHeight(){
-    const headerH = headerEl.offsetHeight || 0;
-    const mbH = (mqMobile.matches && mbToolbar.classList.contains('show')) ? mbToolbar.offsetHeight : 0;
-    editor.style.minHeight = `calc(100dvh - ${headerH + mbH + 32}px)`; // 32px de folga
-  }
+  // Layout helpers
+  function recalcPageMinHeight(){ const headerH = headerEl.offsetHeight || 0; const mbH = (mqMobile.matches && mbToolbar.classList.contains('show')) ? mbToolbar.offsetHeight : 0; editor.style.minHeight = `calc(100dvh - ${headerH + mbH + 32}px)`; }
   window.addEventListener('resize', recalcPageMinHeight);
   new ResizeObserver(()=>recalcPageMinHeight()).observe(headerEl);
   new ResizeObserver(()=>recalcPageMinHeight()).observe(mbToolbar);
 
+  // Layout: ações simples
+  document.getElementById('narrowMargins')?.addEventListener('click', ()=>{ editor.style.padding = '18mm 14mm'; });
+  document.getElementById('wideMargins')?.addEventListener('click', ()=>{ editor.style.padding = '32mm 26mm'; });
+  document.getElementById('togglePaperTheme')?.addEventListener('click', ()=>{ document.body.classList.toggle('dark'); localStorage.setItem(THEME_KEY, document.body.classList.contains('dark')?'dark':'light'); });
+  document.getElementById('toggleStatus')?.addEventListener('click', ()=>{ document.getElementById('status').style.display = (document.getElementById('status').style.display==='none') ? '' : 'none'; });
+
   // Init
   (function init(){
     const theme = localStorage.getItem(THEME_KEY); if(theme === 'dark') document.body.classList.add('dark');
-    const saved = localStorage.getItem(AUTOSAVE_KEY);
-    if(saved){ editor.innerHTML = sanitizeHTML(saved); showToast('Documento restaurado (autosave)'); }
+    const saved = localStorage.getItem(AUTOSAVE_KEY); if(saved){ editor.innerHTML = sanitizeHTML(saved); showToast('Documento restaurado (autosave)'); }
     refreshState(); savedState.textContent = 'Pronto';
-    recalcPageMinHeight(); fixToolbarForKeyboard();
+    recalcPageMinHeight(); fixToolbarForKeyboard(); showTab('home');
   })();
 })();
 </script>
