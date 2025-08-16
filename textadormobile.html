@@ -4,14 +4,14 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <meta name="color-scheme" content="light dark" />
-<title>Editor — estilo Word (abas compactas)</title>
+<title>Editor — estilo Word (Abas Mobile, 1 linha por aba)</title>
 <style>
   :root{
     --bg:#0f141a; --panel:#161c23; --ink:#e7eef7; --muted:#9fb0c6;
-    --paper:#ffffff; --paper-ink:#0b1220; --brand:#2f7df6; --brand-2:#1fb888;
+    --paper:#ffffff; --paper-ink:#0b1220; --brand:#2f7df6;
     --border:#e5ebf3; --shadow:0 8px 32px rgba(0,0,0,.12);
     --btn:#f6f8fb; --btn-ink:#0c1321; --btn-active:#e6efff; --btn-bd:#d5dfec;
-    --touch:40px; --radius:12px; --ribbonH:56px;
+    --touch:40px; --radius:10px; --ribbonH:64px; --scale:1;
   }
   body.dark{
     --bg:#0a0f14; --panel:#0f151c; --ink:#dbe6f5; --muted:#86a0bf;
@@ -21,55 +21,32 @@
   }
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
   html,body{height:100%}
-  body{
-    margin:0; background:var(--bg); color:var(--ink);
-    font:16px/1.4 system-ui, -apple-system, Segoe UI, Roboto, Arial;
-    overscroll-behavior-y:none;
-  }
+  body{margin:0; font:16px/1.4 system-ui, -apple-system, Segoe UI, Roboto, Arial; background:var(--bg); color:var(--ink); overscroll-behavior-y:none}
   :focus-visible{outline:2px solid var(--brand); outline-offset:2px}
 
   .wrap{display:flex; flex-direction:column; min-height:100dvh}
 
-  /* ===== Ribbon com abas ===== */
-  header{position:sticky; top:0; z-index:50; background:var(--panel); box-shadow:var(--shadow);}
-  .ribbon{max-width:1100px; margin:0 auto;}
-  .tablist{display:flex; gap:.25rem; align-items:center; padding:.35rem .5rem; border-bottom:1px solid var(--border);}
-  .tablist .brand{font-weight:800; letter-spacing:.2px; margin-right:.25rem; padding:.2rem .5rem}
-  .tablist button[role="tab"]{
-    background:transparent; border:0; color:var(--muted); padding:.45rem .7rem; border-radius:8px; cursor:pointer; font:600 14px/1 system-ui;
-  }
-  .tablist button[aria-selected="true"]{color:var(--ink); background:color-mix(in srgb, var(--btn) 85%, transparent); border:1px solid var(--btn-bd)}
-  .tab-actions{margin-left:auto; display:flex; align-items:center; gap:.4rem}
-  .tab-actions button, .tab-actions label{height:var(--touch)}
+  /* ===== Ribbon em abas ===== */
+  header{position:sticky; top:0; z-index:50; background:var(--panel); box-shadow:var(--shadow)}
+  .tablist{display:flex; gap:.25rem; align-items:center; padding:.4rem .6rem; border-bottom:1px solid var(--border); overflow-x:auto}
+  .tablist .brand{font-weight:800; margin-right:.4rem}
+  .tablist button[role="tab"]{background:transparent; border:0; color:var(--muted); font:600 14px/1 system-ui; padding:.45rem .7rem; border-radius:8px; cursor:pointer; white-space:nowrap}
+  .tablist button[aria-selected="true"]{color:var(--ink); background:var(--btn); border:1px solid var(--btn-bd)}
 
-  /* Faixa de comandos (uma linha por aba) */
-  .tabpanes{position:relative;}
-  .ribbon-row{
-    height:var(--ribbonH); display:flex; align-items:center; gap:.4rem; padding:.35rem .5rem;
-    overflow-x:auto; overflow-y:hidden; border-bottom:1px solid var(--border);
-    background:color-mix(in srgb, var(--panel) 92%, transparent);
-  }
-  .ribbon-row .group{display:flex; gap:.3rem; padding:.25rem; background:var(--panel); border:1px solid var(--btn-bd); border-radius:10px; flex:0 0 auto}
+  /* Cada aba: 1 linha, rolagem horizontal se precisar */
+  .ribbon-row{display:flex; align-items:center; gap:.4rem; padding:.35rem .5rem; border-bottom:1px solid var(--border); background:var(--panel); height:var(--ribbonH); overflow-x:auto; overflow-y:hidden}
+  .ribbon-row .group{display:flex; gap:.3rem; padding:.25rem; background:var(--panel); border:1px solid var(--btn-bd); border-radius:var(--radius); flex:0 0 auto}
 
-  button, select, input[type="color"]{
-    height:var(--touch); min-width:40px; border:1px solid var(--btn-bd);
-    background:var(--btn); color:var(--btn-ink); border-radius:10px; padding:.35rem .55rem; cursor:pointer;
-    font:600 14px/1 system-ui; outline-offset:2px; touch-action:manipulation;
-  }
+  button, select, input[type="color"]{height:var(--touch); border:1px solid var(--btn-bd); background:var(--btn); color:var(--btn-ink); border-radius:var(--radius); padding:.3rem .55rem; font:600 14px/1 system-ui; cursor:pointer; touch-action:manipulation}
   button:hover{background:color-mix(in srgb, var(--btn) 70%, white)}
   button.active{background:var(--btn-active); border-color:var(--brand)}
-  select{padding-right:1.4rem}
+  select{padding-right:1.5rem}
   input[type="color"]{padding:0 .2rem; width:40px}
 
   /* Editor */
   main{flex:1; display:flex}
   .stage{width:100%; max-width:1100px; margin:16px auto; padding:0 12px}
-  .page{
-    background:var(--paper); color:var(--paper-ink);
-    min-height:70dvh; padding:28mm 22mm; border:1px solid var(--border);
-    border-radius:14px; box-shadow:var(--shadow);
-    font:16px/1.6 "Segoe UI", Roboto, Arial, system-ui;
-  }
+  .page{background:var(--paper); color:var(--paper-ink); min-height:70dvh; padding:28mm 22mm; border:1px solid var(--border); border-radius:14px; box-shadow:var(--shadow); transform:scale(var(--scale)); transform-origin:top center}
   .page:focus{outline:none}
   .page h1{font-size:2.2rem; margin:0 0 .6rem}
   .page h2{font-size:1.8rem; margin:1.2rem 0 .4rem}
@@ -78,148 +55,145 @@
   .page img{max-width:100%; height:auto; border-radius:8px}
   .page blockquote{border-left:4px solid #9ac1ff55; margin:1rem 0; padding:.5rem 1rem; color:#3a4a63; background:#eaf2ff66; border-radius:8px}
 
-  .status{max-width:1100px; margin:6px auto 16px; color:var(--muted); display:flex; gap:1rem; align-items:center; padding:0 12px; font-size:.95rem}
+  .status{max-width:1100px; margin:6px auto 16px; padding:0 12px; font-size:.9rem; color:var(--muted); display:flex; gap:1rem}
 
   /* Mobile */
   @media (max-width:720px){
-    .page{font-size:clamp(15px,3.9vw,18px); padding:clamp(16px,5vw,24px) clamp(14px,4.5vw,20px); min-height:calc(100dvh - (var(--ribbonH) + 130px));}
-    .tablist{overflow-x:auto}
-    .ribbon-row{scroll-snap-type:x mandatory}
+    .page{font-size:clamp(15px,3.9vw,18px); padding:clamp(16px,5vw,24px) clamp(14px,4.5vw,20px); min-height:calc(100dvh - (var(--ribbonH) + 130px))}
+    .tablist{scroll-snap-type:x mandatory}
+    .tablist [role="tab"]{scroll-snap-align:start}
+    .ribbon-row{scroll-snap-type:x proximity}
     .ribbon-row .group{scroll-snap-align:start}
   }
 
   /* Print */
   @media print{
-    header, .status, .mb-toolbar{display:none !important}
+    header, .status{display:none !important}
     body{background:#fff}
     .stage{max-width:none; margin:0; padding:0}
-    .page{border:none; box-shadow:none; min-height:auto; padding:15mm 18mm}
+    .page{border:none; box-shadow:none; min-height:auto; padding:15mm 18mm; transform:none}
   }
 
   /* Toast */
   .toast{position:fixed; bottom:16px; right:16px; background:#111a; color:#fff; padding:.6rem .8rem; border-radius:10px; backdrop-filter:blur(6px); opacity:0; transform:translateY(8px); transition:.25s; z-index:99}
   .toast.show{opacity:1; transform:translateY(0)}
-
-  /* Barra rápida mobile */
-  .mb-toolbar{position:fixed; left:0; right:0; bottom:0; z-index:60; display:none; gap:.4rem; align-items:center; overflow-x:auto; background:color-mix(in srgb, var(--panel) 92%, transparent); border-top:1px solid var(--border); box-shadow:var(--shadow); padding:.4rem .5rem calc(.5rem + env(safe-area-inset-bottom));}
-  .mb-toolbar.show{display:flex}
-  .mb-toolbar .group{display:flex; gap:.25rem; padding:.25rem; background:var(--panel); border:1px solid var(--btn-bd); border-radius:var(--radius)}
-  .mb-toolbar button{height:40px; min-width:40px; font-size:15px}
-  @media (min-width:721px){.mb-toolbar{display:none !important}}
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
-    <div class="ribbon">
-      <!-- Abas -->
-      <div class="tablist" role="tablist" aria-label="Abas do editor">
-        <div class="brand">Editor</div>
-        <button role="tab" class="tab" data-tab="home" aria-selected="true">Página inicial</button>
-        <button role="tab" class="tab" data-tab="insert">Inserir</button>
-        <button role="tab" class="tab" data-tab="layout">Layout</button>
-        <button role="tab" class="tab" data-tab="view">Exibir</button>
-        <button role="tab" class="tab" data-tab="file">Arquivo</button>
-        <div class="tab-actions">
-          <button id="darkToggle" title="Modo escuro/claro">🌙/☀️</button>
-          <label style="display:flex;align-items:center;gap:.35rem;padding-right:.2rem">
-            <input type="checkbox" id="autosaveToggle" checked />
-            <span style="font-size:.9rem;color:var(--muted)">Autosave</span>
-          </label>
-        </div>
+    <!-- Abas (NADA fora das abas) -->
+    <div class="tablist" role="tablist" aria-label="Abas do editor">
+      <div class="brand">Editor</div>
+      <button role="tab" class="tab" data-tab="home" aria-selected="true">Página inicial</button>
+      <button role="tab" class="tab" data-tab="insert">Inserir</button>
+      <button role="tab" class="tab" data-tab="layout">Layout</button>
+      <button role="tab" class="tab" data-tab="view">Exibir</button>
+      <button role="tab" class="tab" data-tab="file">Arquivo</button>
+    </div>
+
+    <!-- HOME: formatação e parágrafo -->
+    <div class="ribbon-row" data-pane="home">
+      <div class="group" aria-label="Parágrafo">
+        <button data-cmd="bold" title="Negrito (Ctrl+B)">B</button>
+        <button data-cmd="italic" title="Itálico (Ctrl+I)"><i>I</i></button>
+        <button data-cmd="underline" title="Sublinhado (Ctrl+U)"><u>U</u></button>
+        <button data-cmd="strikeThrough" title="Tachado">S̶</button>
+        <button id="clearFormat" title="Limpar formatação">Limpar</button>
       </div>
+      <div class="group" aria-label="Fonte/Cor">
+        <select id="fontName" title="Fonte">
+          <option value="inherit">Fonte</option>
+          <option>Arial</option><option>Georgia</option><option>"Times New Roman"</option>
+          <option>Verdana</option><option>Tahoma</option><option>"Courier New"</option>
+        </select>
+        <select id="fontSize" title="Tamanho da fonte">
+          <option value="0">Tamanho</option>
+          <option value="2">Pequeno</option>
+          <option value="3" selected>Médio</option>
+          <option value="4">Grande</option>
+          <option value="5">Muito grande</option>
+          <option value="6">Enorme</option>
+        </select>
+        <input type="color" id="foreColor" title="Cor do texto" />
+        <input type="color" id="hiliteColor" title="Marca-texto" />
+      </div>
+      <div class="group" aria-label="Alinhamento e lista">
+        <button data-cmd="justifyLeft" title="Esquerda">⟸</button>
+        <button data-cmd="justifyCenter" title="Centro">╋</button>
+        <button data-cmd="justifyRight" title="Direita">⟹</button>
+        <button data-cmd="justifyFull" title="Justificar">≋</button>
+        <button data-cmd="insertUnorderedList" title="Lista •">•</button>
+        <button data-cmd="insertOrderedList" title="Lista 1.">1.</button>
+        <button data-cmd="outdent" title="Recuar">↤</button>
+        <button data-cmd="indent" title="Avançar">↦</button>
+        <button id="quote" title="Citação">“ ”</button>
+      </div>
+      <div class="group" aria-label="Bloco">
+        <select id="blockFormat" title="Estilo do parágrafo">
+          <option value="p">Parágrafo</option>
+          <option value="h1">Título 1</option>
+          <option value="h2">Título 2</option>
+          <option value="h3">Título 3</option>
+        </select>
+      </div>
+    </div>
 
-      <!-- Faixas (uma linha cada) -->
-      <div class="tabpanes">
-        <!-- HOME -->
-        <div class="ribbon-row" data-pane="home">
-          <div class="group" aria-label="Parágrafo">
-            <button data-cmd="bold" title="Negrito (Ctrl+B)">B</button>
-            <button data-cmd="italic" title="Itálico (Ctrl+I)"><i>I</i></button>
-            <button data-cmd="underline" title="Sublinhado (Ctrl+U)"><u>U</u></button>
-            <button data-cmd="strikeThrough" title="Tachado">S̶</button>
-          </div>
-          <div class="group" aria-label="Fonte/Cor">
-            <select id="fontName" title="Fonte">
-              <option value="inherit">Padrão</option>
-              <option>Arial</option><option>Georgia</option><option>"Times New Roman"</option>
-              <option>Verdana</option><option>Tahoma</option><option>"Courier New"</option>
-            </select>
-            <select id="fontSize" title="Tamanho da fonte">
-              <option value="0">Tamanho</option>
-              <option value="2">Pequeno</option>
-              <option value="3" selected>Médio</option>
-              <option value="4">Grande</option>
-              <option value="5">Muito grande</option>
-              <option value="6">Enorme</option>
-            </select>
-            <input type="color" id="foreColor" value="#0b1220" title="Cor do texto" />
-            <input type="color" id="hiliteColor" value="#fff59d" title="Marca-texto" />
-          </div>
-          <div class="group" aria-label="Alinhamento e lista">
-            <button data-cmd="justifyLeft" title="Esquerda">⟸</button>
-            <button data-cmd="justifyCenter" title="Centro">╋</button>
-            <button data-cmd="justifyRight" title="Direita">⟹</button>
-            <button data-cmd="justifyFull" title="Justificar">≋</button>
-            <button data-cmd="insertUnorderedList" title="Lista •">•</button>
-            <button data-cmd="insertOrderedList" title="Lista 1.">1.</button>
-            <button data-cmd="outdent" title="Recuar">↤</button>
-            <button data-cmd="indent" title="Avançar">↦</button>
-            <button id="quote" title="Citação">“ ”</button>
-            <button id="clearFormat" title="Limpar formatação">Limpar</button>
-          </div>
-          <div class="group" aria-label="Bloco">
-            <select id="blockFormat" title="Estilo do parágrafo">
-              <option value="p">Parágrafo</option>
-              <option value="h1">Título 1</option>
-              <option value="h2">Título 2</option>
-              <option value="h3">Título 3</option>
-            </select>
-          </div>
-        </div>
+    <!-- INSERT: tudo de inserção -->
+    <div class="ribbon-row" data-pane="insert" hidden>
+      <div class="group" aria-label="Inserir">
+        <button id="insertLink" title="Inserir link">🔗 Link</button>
+        <button id="insertImg" title="Inserir imagem">🖼️ Imagem</button>
+        <input id="hiddenImage" type="file" accept="image/*" hidden />
+      </div>
+      <div class="group" aria-label="Outros">
+        <button id="tableInsert" title="Inserir tabela">📊 Tabela</button>
+        <button id="symbolInsert" title="Inserir símbolo">Ω Símbolo</button>
+      </div>
+    </div>
 
-        <!-- INSERT -->
-        <div class="ribbon-row" data-pane="insert" hidden>
-          <div class="group" aria-label="Inserir">
-            <button id="insertLink" title="Inserir link">🔗 Link</button>
-            <button id="insertImg" title="Inserir imagem">🖼️ Imagem</button>
-            <input id="hiddenImage" type="file" accept="image/*" hidden />
-          </div>
-          <div class="group" aria-label="Edição">
-            <button data-cmd="undo" title="Desfazer (Ctrl+Z)">↶</button>
-            <button data-cmd="redo" title="Refazer (Ctrl+Y)">↷</button>
-            <button id="findBtn" title="Buscar (Ctrl+F do navegador já funciona)">Buscar</button>
-            <button id="replaceBtn" title="Substituir">Substituir</button>
-          </div>
-        </div>
+    <!-- LAYOUT: página e papel -->
+    <div class="ribbon-row" data-pane="layout" hidden>
+      <div class="group" aria-label="Página">
+        <button id="narrowMargins" title="Margens estreitas">Margem−</button>
+        <button id="wideMargins" title="Margens largas">Margem+</button>
+        <button id="orientation" title="Retrato/Paisagem">Orientação</button>
+        <button id="size" title="A4/Letter">Tamanho</button>
+      </div>
+      <div class="group" aria-label="Aparência">
+        <button id="togglePaperTheme" title="Alternar papel claro/escuro">🗒️ Papel</button>
+      </div>
+    </div>
 
-        <!-- LAYOUT -->
-        <div class="ribbon-row" data-pane="layout" hidden>
-          <div class="group" aria-label="Página">
-            <button id="narrowMargins" title="Margens estreitas">Margem−</button>
-            <button id="wideMargins" title="Margens largas">Margem+</button>
-            <button id="togglePaperTheme" title="Cor do papel">🗒️ Papel</button>
-          </div>
-        </div>
+    <!-- VIEW: zoom, status, tema -->
+    <div class="ribbon-row" data-pane="view" hidden>
+      <div class="group" aria-label="Zoom">
+        <button id="zoomOut" title="Zoom −">Zoom −</button>
+        <button id="zoomIn" title="Zoom +">Zoom +</button>
+        <button id="zoomReset" title="Zoom 100%">100%</button>
+      </div>
+      <div class="group" aria-label="Exibição">
+        <button id="toggleStatus" title="Alternar barra de status">Status</button>
+        <button id="darkToggle" title="Modo escuro/claro">🌙/☀️</button>
+      </div>
+    </div>
 
-        <!-- VIEW -->
-        <div class="ribbon-row" data-pane="view" hidden>
-          <div class="group" aria-label="Exibir">
-            <button id="printDoc" title="Imprimir / PDF">Imprimir</button>
-            <button id="toggleStatus" title="Alternar barra de status">Status</button>
-          </div>
-        </div>
-
-        <!-- FILE -->
-        <div class="ribbon-row" data-pane="file" hidden>
-          <div class="group" aria-label="Arquivo">
-            <button id="newDoc" title="Novo (Ctrl+N)">Novo</button>
-            <button id="openFile" title="Abrir HTML/TXT">Abrir</button>
-            <input id="hiddenFile" type="file" accept=".html,.htm,.txt" hidden />
-            <button id="saveDoc" title="Exportar .DOC (Ctrl+S)">Salvar .DOC</button>
-            <button id="exportHTML" title="Exportar HTML">Exportar HTML</button>
-          </div>
-        </div>
+    <!-- FILE: tudo de arquivo e busca -->
+    <div class="ribbon-row" data-pane="file" hidden>
+      <div class="group" aria-label="Arquivo">
+        <button id="newDoc" title="Novo (Ctrl+N)">Novo</button>
+        <button id="openFile" title="Abrir HTML/TXT">Abrir</button>
+        <input id="hiddenFile" type="file" accept=".html,.htm,.txt" hidden />
+        <button id="saveDoc" title="Exportar .DOC (Ctrl+S)">Salvar .DOC</button>
+        <button id="exportHTML" title="Exportar HTML">Exportar HTML</button>
+        <button id="printDoc" title="Imprimir / PDF">Imprimir</button>
+      </div>
+      <div class="group" aria-label="Edição">
+        <button id="findBtn" title="Buscar (Ctrl+F)">Buscar</button>
+        <button id="replaceBtn" title="Substituir">Substituir</button>
+      </div>
+      <div class="group" aria-label="Preferências">
+        <label style="display:flex;align-items:center;gap:.35rem"><input type="checkbox" id="autosaveToggle" checked /> Autosave</label>
       </div>
     </div>
   </header>
@@ -228,36 +202,16 @@
     <div class="stage">
       <div id="editor" class="page" contenteditable="true" spellcheck="true">
         <h1>Título do Documento</h1>
-        <p><em>Dica:</em> este editor salva automaticamente no seu navegador. Você pode exportar como <strong>.DOC</strong> (abre no Word), imprimir em PDF, inserir imagens, links, listas, citações e muito mais.</p>
-        <p>Comece a digitar aqui…</p>
+        <p>Comece a digitar…</p>
       </div>
       <div class="status" id="status">
         <div id="wordCount">0 palavras</div>
         <div id="charCount">0 caracteres</div>
-        <div id="readTime">0 min de leitura</div>
+        <div id="readTime">0 min</div>
         <div id="savedState">—</div>
       </div>
     </div>
   </main>
-</div>
-
-<!-- Barra rápida mobile -->
-<div class="mb-toolbar" id="mbToolbar" role="toolbar" aria-label="Ferramentas rápidas">
-  <div class="group">
-    <button data-cmd="undo" title="Desfazer">↶</button>
-    <button data-cmd="redo" title="Refazer">↷</button>
-  </div>
-  <div class="group">
-    <button data-cmd="bold" title="Negrito">B</button>
-    <button data-cmd="italic" title="Itálico"><i>I</i></button>
-    <button data-cmd="underline" title="Sublinhado"><u>U</u></button>
-    <button data-cmd="insertUnorderedList" title="Lista •">•</button>
-    <button data-cmd="insertOrderedList" title="Lista 1.">1.</button>
-  </div>
-  <div class="group">
-    <button data-action="link" title="Inserir link">🔗</button>
-    <button data-action="img" title="Inserir imagem">🖼️</button>
-  </div>
 </div>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
@@ -270,10 +224,8 @@
   const statusC = document.getElementById('charCount');
   const statusR = document.getElementById('readTime');
   const savedState = document.getElementById('savedState');
-  const mbToolbar = document.getElementById('mbToolbar');
-  const headerEl = document.querySelector('header');
 
-  const AUTOSAVE_KEY = 'richword.autosave.v1';
+  const AUTOSAVE_KEY = 'richword.autosave.v2';
   const THEME_KEY = 'richword.theme';
   let autosaveOn = true; let saveTimer = null;
 
@@ -298,15 +250,6 @@
   // Delegação global de comandos
   document.addEventListener('click', (e)=>{
     const btn = e.target.closest('button[data-cmd]'); if(btn){ e.preventDefault(); cmd(btn.dataset.cmd); }
-  }, {passive:true});
-
-  // Mobile quickbar
-  mbToolbar.addEventListener('click', (e)=>{
-    const btn = e.target.closest('button'); if(!btn) return;
-    const command = btn.dataset.cmd; const action = btn.dataset.action;
-    if(command){ e.preventDefault(); cmd(command); return; }
-    if(action === 'link'){ e.preventDefault(); handleInsertLink(); return; }
-    if(action === 'img'){ e.preventDefault(); handleInsertImage(); return; }
   }, {passive:true});
 
   // Block format
@@ -334,31 +277,57 @@
     if(window.getSelection().isCollapsed){ insertHTMLAtCaret(`<a href="${escapeHtml(url)}" target="_blank" rel="noopener">${escapeHtml(url)}</a>`); }
     else{ cmd('createLink', url); }
   }
-  document.getElementById('insertLink')?.addEventListener('click', handleInsertLink);
+  document.getElementById('insertLink').addEventListener('click', handleInsertLink);
 
   // Inserir imagem
   const imgInput = document.getElementById('hiddenImage');
-  function handleInsertImage(){ imgInput?.click(); }
-  document.getElementById('insertImg')?.addEventListener('click', handleInsertImage);
-  imgInput?.addEventListener('change', ()=>{
+  function handleInsertImage(){ imgInput.click(); }
+  document.getElementById('insertImg').addEventListener('click', handleInsertImage);
+  imgInput.addEventListener('change', ()=>{
     const file = imgInput.files[0]; imgInput.value=''; if(!file) return;
     const reader = new FileReader();
     reader.onload = e=> insertHTMLAtCaret(`<img src="${e.target.result}" alt="" loading="lazy" decoding="async">`);
     reader.readAsDataURL(file);
   });
 
-  // Buscar / Substituir
-  document.getElementById('findBtn')?.addEventListener('click', ()=>{
-    const q = prompt('Buscar por:'); if(!q) return; if(!window.find(q, false, false, true, false, false, false)) showToast('Não encontrado');
+  // Tabela e símbolo (simples)
+  document.getElementById('tableInsert').addEventListener('click', ()=>{
+    const rows = parseInt(prompt('Linhas:', '2'),10)||2; const cols = parseInt(prompt('Colunas:', '2'),10)||2;
+    let html = '<table style="border-collapse:collapse;width:100%">';
+    for(let r=0;r<rows;r++){ html+='<tr>'; for(let c=0;c<cols;c++){ html+='<td style="border:1px solid #cbd5e1;padding:.35rem"> </td>'; } html+='</tr>'; }
+    html+='</table>'; insertHTMLAtCaret(html);
   });
-  document.getElementById('replaceBtn')?.addEventListener('click', ()=>{
-    const q = prompt('Substituir — procurar por:'); if(!q) return; const r = prompt(`Substituir "${q}" por:`, ''); if(r===null) return; replaceAllInEditor(q, r);
+  document.getElementById('symbolInsert').addEventListener('click', ()=>{
+    const s = prompt('Símbolo (ex: ©, ™, Ω, µ):','Ω'); if(!s) return; insertHTMLAtCaret(escapeHtml(s));
   });
 
-  // Arquivo: novo/abrir/salvar/exportar/imprimir
+  // Layout: margens, orientação, tamanho
+  document.getElementById('narrowMargins').addEventListener('click', ()=>{ editor.style.padding = '18mm 14mm'; });
+  document.getElementById('wideMargins').addEventListener('click', ()=>{ editor.style.padding = '32mm 26mm'; });
+  document.getElementById('orientation').addEventListener('click', ()=>{
+    const portrait = editor.style.aspectRatio !== '1.414 / 1'; // A4 retrato ~ 1.414
+    editor.style.aspectRatio = portrait ? '1.414 / 1' : '1 / 1.414';
+  });
+  document.getElementById('size').addEventListener('click', ()=>{
+    const opt = prompt('Tamanho (A4, Letter):','A4');
+    if(!opt) return;
+    if(opt.toLowerCase()==='letter'){ editor.style.maxWidth = '816px'; }
+    else { editor.style.maxWidth = '794px'; }
+  });
+
+  // View: zoom, status, tema
+  function setScale(k){ document.documentElement.style.setProperty('--scale', Math.max(0.6, Math.min(2, k))); }
+  let scale = 1;
+  document.getElementById('zoomIn').addEventListener('click', ()=>{ scale = Math.min(2, +(scale+0.1).toFixed(2)); setScale(scale); });
+  document.getElementById('zoomOut').addEventListener('click', ()=>{ scale = Math.max(0.6, +(scale-0.1).toFixed(2)); setScale(scale); });
+  document.getElementById('zoomReset').addEventListener('click', ()=>{ scale = 1; setScale(scale); });
+  document.getElementById('toggleStatus').addEventListener('click', ()=>{ const s=document.getElementById('status'); s.style.display = (s.style.display==='none') ? '' : 'none'; });
+  document.getElementById('darkToggle').addEventListener('click', ()=>{ document.body.classList.toggle('dark'); localStorage.setItem(THEME_KEY, document.body.classList.contains('dark')?'dark':'light'); });
+
+  // File ops
   const openInput = document.getElementById('hiddenFile');
-  document.getElementById('openFile')?.addEventListener('click', ()=> openInput?.click());
-  openInput?.addEventListener('change', ()=>{
+  document.getElementById('openFile').addEventListener('click', ()=> openInput.click());
+  openInput.addEventListener('change', ()=>{
     const file = openInput.files[0]; openInput.value=''; if(!file) return;
     const reader = new FileReader(); reader.onload = e=>{
       const text = e.target.result; const isHtml = /<\/?[a-z][\s\S]*>/i.test(text);
@@ -367,29 +336,45 @@
     }; reader.readAsText(file, 'utf-8');
   });
 
-  document.getElementById('newDoc')?.addEventListener('click', ()=>{
+  document.getElementById('newDoc').addEventListener('click', ()=>{
     if(editor.innerText.trim().length && !confirm('Limpar documento atual?')) return;
     editor.innerHTML = '<h1>Título do Documento</h1><p>Comece a digitar…</p>';
     persistNow(); showToast('Novo documento');
   });
 
-  document.getElementById('saveDoc')?.addEventListener('click', ()=> downloadDocFile());
-  document.getElementById('exportHTML')?.addEventListener('click', ()=>{
+  document.getElementById('saveDoc').addEventListener('click', ()=> downloadDocFile());
+  document.getElementById('exportHTML').addEventListener('click', ()=>{
     const html = wrapAsStandaloneHTML(editor.innerHTML); downloadBlob(html, 'text/html', 'documento.html');
   });
-  document.getElementById('printDoc')?.addEventListener('click', ()=> window.print());
+  document.getElementById('printDoc').addEventListener('click', ()=> window.print());
 
-  // Preferências
+  // Buscar / Substituir
+  document.getElementById('findBtn').addEventListener('click', ()=>{
+    const q = prompt('Buscar por:'); if(!q) return; if(!window.find(q, false, false, true, false, false, false)) showToast('Não encontrado');
+  });
+  document.getElementById('replaceBtn').addEventListener('click', ()=>{
+    const q = prompt('Substituir — procurar por:'); if(!q) return; const r = prompt(`Substituir "${q}" por:`, ''); if(r===null) return; replaceAllInEditor(q, r);
+  });
+
+  // Autosave
   const autosaveToggle = document.getElementById('autosaveToggle');
-  autosaveToggle?.addEventListener('change', ()=>{
-    autosaveOn = autosaveToggle.checked; if(autosaveOn) persistNow(); savedState.textContent = autosaveOn ? 'Autosave ligado' : 'Autosave desligado';
-  });
-  const darkToggle = document.getElementById('darkToggle');
-  darkToggle?.addEventListener('click', ()=>{
-    document.body.classList.toggle('dark'); localStorage.setItem(THEME_KEY, document.body.classList.contains('dark')?'dark':'light');
-  });
+  autosaveToggle.addEventListener('change', ()=>{ autosaveOn = autosaveToggle.checked; if(autosaveOn) persistNow(); savedState.textContent = autosaveOn ? 'Autosave ligado' : 'Autosave desligado'; });
 
-  // HTML at caret
+  function persistNow(){ if(!autosaveOn) return; localStorage.setItem(AUTOSAVE_KEY, editor.innerHTML); savedState.textContent='Salvo'; }
+  editor.addEventListener('input', ()=>{ refreshState(); savedState.textContent='Editando…'; if(saveTimer) clearTimeout(saveTimer); saveTimer = setTimeout(()=>{ persistNow(); showToast('Salvo'); }, 800); });
+
+  // Status
+  function refreshState(){
+    const text = editor.innerText || '';
+    const words = (text.trim().match(/\S+/g)||[]).length;
+    const chars = text.replace(/\s/g,'').length;
+    const mins = Math.max(1, Math.ceil(words/200));
+    statusW.textContent = `${words} palavra${words===1?'':'s'}`;
+    statusC.textContent = `${chars} caractere${chars===1?'':'s'}`;
+    statusR.textContent = `${mins} min`;
+  }
+
+  // Inserção HTML no caret
   function insertHTMLAtCaret(html){
     editor.focus(); const sel = window.getSelection();
     if(!sel || sel.rangeCount === 0){ editor.insertAdjacentHTML('beforeend', html); return; }
@@ -397,7 +382,7 @@
     if(lastNode){ const r = document.createRange(); r.setStartAfter(lastNode); r.collapse(true); sel.removeAllRanges(); sel.addRange(r); }
   }
 
-  // Replace all
+  // Replace all simples
   function replaceAllInEditor(findStr, replaceStr){
     const esc = findStr.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const re = new RegExp(esc, 'g');
@@ -410,7 +395,7 @@
     return safe || '<p></p>';
   }
 
-  // Export .DOC
+  // DOC (Word lê HTML)
   function downloadDocFile(){
     const docHTML = `<!DOCTYPE html><html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><title>Documento</title><style>body{font-family:\"Times New Roman\",serif; color:#111; line-height:1.5} img{max-width:100%; height:auto} blockquote{border-left:4px solid #9ac1ff; padding:.5rem 1rem; background:#eef5ff} h1{font-size:28pt} h2{font-size:22pt} h3{font-size:18pt} p{font-size:12pt}</style></head><body>${editor.innerHTML}</body></html>`;
     downloadBlob(docHTML, 'application/msword', 'documento.doc');
@@ -418,67 +403,14 @@
   function wrapAsStandaloneHTML(inner){
     return `<!doctype html><html lang=\"pt-BR\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>Documento exportado</title><style>body{font:16px/1.6 Segoe UI, Roboto, Arial; color:#0b1220; padding:28mm 22mm; background:#fff} img{max-width:100%;height:auto} blockquote{border-left:4px solid #9ac1ff; padding:.5rem 1rem; background:#eef5ff} h1{font-size:2.2rem} h2{font-size:1.8rem} h3{font-size:1.4rem}</style></head><body>${inner}</body></html>`;
   }
-  function downloadBlob(content, mime, filename){
-    const blob = new Blob([content], {type:mime}); const url = URL.createObjectURL(blob);
-    const a = document.createElement('a'); a.href = url; a.download = filename; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
-  }
-
-  // Status
-  function refreshState(){
-    const text = editor.innerText || '';
-    const words = (text.trim().match(/\S+/g)||[]).length;
-    const chars = text.replace(/\s/g,'').length;
-    const mins = Math.max(1, Math.ceil(words/200));
-    statusW.textContent = `${words} palavra${words===1?'':'s'}`;
-    statusC.textContent = `${chars} caractere${chars===1?'':'s'}`;
-    statusR.textContent = `${mins} min de leitura`;
-  }
-
-  // Autosave
-  function persistNow(){ if(!autosaveOn) return; localStorage.setItem(AUTOSAVE_KEY, editor.innerHTML); savedState.textContent='Salvo'; }
-  editor.addEventListener('input', ()=>{ refreshState(); savedState.textContent='Editando…'; if(saveTimer) clearTimeout(saveTimer); saveTimer = setTimeout(()=>{ persistNow(); showToast('Salvo'); }, 800); });
-
-  // Botões ativos
-  function updateActiveButtons(){
-    const map = ['bold','italic','underline','strikeThrough','justifyLeft','justifyCenter','justifyRight','justifyFull'];
-    map.forEach(cmdName=>{ document.querySelectorAll(`button[data-cmd="${cmdName}"]`).forEach(btn=>{ try{ btn.classList.toggle('active', document.queryCommandState(cmdName)); }catch{} }); });
-  }
-  document.addEventListener('selectionchange', ()=>{ if(document.activeElement === editor || editor.contains(document.activeElement)) updateActiveButtons(); });
-
-  // Atalhos
-  document.addEventListener('keydown', (e)=>{
-    if((e.ctrlKey || e.metaKey) && e.key.toLowerCase()==='s'){ e.preventDefault(); downloadDocFile(); }
-    if((e.ctrlKey || e.metaKey) && e.key.toLowerCase()==='n'){ e.preventDefault(); document.getElementById('newDoc')?.click(); }
-  });
-
-  // Mobile: quick bar ao focar
-  const mqMobile = window.matchMedia('(max-width: 720px)');
-  function toggleMB(show){ mbToolbar.classList.toggle('show', !!show && mqMobile.matches); fixToolbarForKeyboard(); recalcPageMinHeight(); }
-  editor.addEventListener('focusin', ()=> toggleMB(true));
-  editor.addEventListener('blur', ()=> setTimeout(()=>{ if(!document.activeElement || !document.activeElement.closest('.mb-toolbar')) toggleMB(false); }, 150));
-
-  // Teclado virtual
-  function fixToolbarForKeyboard(){ if(!window.visualViewport) return; const vv = window.visualViewport; const inset = Math.max(0, window.innerHeight - vv.height - vv.offsetTop); mbToolbar.style.bottom = inset + 'px'; }
-  if(window.visualViewport){ visualViewport.addEventListener('resize', fixToolbarForKeyboard); visualViewport.addEventListener('scroll', fixToolbarForKeyboard); }
-
-  // Layout helpers
-  function recalcPageMinHeight(){ const headerH = headerEl.offsetHeight || 0; const mbH = (mqMobile.matches && mbToolbar.classList.contains('show')) ? mbToolbar.offsetHeight : 0; editor.style.minHeight = `calc(100dvh - ${headerH + mbH + 32}px)`; }
-  window.addEventListener('resize', recalcPageMinHeight);
-  new ResizeObserver(()=>recalcPageMinHeight()).observe(headerEl);
-  new ResizeObserver(()=>recalcPageMinHeight()).observe(mbToolbar);
-
-  // Layout: ações simples
-  document.getElementById('narrowMargins')?.addEventListener('click', ()=>{ editor.style.padding = '18mm 14mm'; });
-  document.getElementById('wideMargins')?.addEventListener('click', ()=>{ editor.style.padding = '32mm 26mm'; });
-  document.getElementById('togglePaperTheme')?.addEventListener('click', ()=>{ document.body.classList.toggle('dark'); localStorage.setItem(THEME_KEY, document.body.classList.contains('dark')?'dark':'light'); });
-  document.getElementById('toggleStatus')?.addEventListener('click', ()=>{ document.getElementById('status').style.display = (document.getElementById('status').style.display==='none') ? '' : 'none'; });
+  function downloadBlob(content, mime, filename){ const blob = new Blob([content], {type:mime}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = filename; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url); }
 
   // Init
   (function init(){
     const theme = localStorage.getItem(THEME_KEY); if(theme === 'dark') document.body.classList.add('dark');
     const saved = localStorage.getItem(AUTOSAVE_KEY); if(saved){ editor.innerHTML = sanitizeHTML(saved); showToast('Documento restaurado (autosave)'); }
     refreshState(); savedState.textContent = 'Pronto';
-    recalcPageMinHeight(); fixToolbarForKeyboard(); showTab('home');
+    showTab('home');
   })();
 })();
 </script>
