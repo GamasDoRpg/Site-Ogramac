@@ -13,15 +13,14 @@
     main { padding: 0; display:grid; place-items:start center; }
     #editor { padding: 1rem; min-height: 85vh; outline: none; max-width: 900px; width: min(100%, 900px); line-height:1.6; }
     #editor:empty:before { content: 'Digite aqui...'; color:#94a3b8 }
-    .status { position: sticky; bottom: 0; background:#0b1220; color:#cbd5e1; padding:.4rem .75rem; font-size:.9rem; }
-    code { background: rgba(0,0,0,.06); padding:.1rem .35rem; border-radius:.35rem }
+    .status { position: sticky; bottom: 0; background:#0b1220; color:#cbd5e1; padding:.4rem .75rem; font-size:.9rem; display:flex; gap:.75rem; align-items:center; }
+    code { background: rgba(0,0,0,.12); padding:.1rem .35rem; border-radius:.35rem }
   </style>
 </head>
 <body>
   <header>
-    <h1>Editor Colaborativo</h1>
-    <small>Salas por URL: use <code>#minha-sala</code></small>
-    <span id="room" style="background:rgba(255,255,255,.15); padding:.2rem .55rem; border-radius:999px; font-weight:600"></span>
+    <h1>Editor Colaborativo — Sala Única</h1>
+    <small>Todas as pessoas entram no mesmo documento</small>
     <span id="peers">👥 1</span>
   </header>
 
@@ -31,6 +30,7 @@
 
   <div class="status">
     <span id="sync">Conectando…</span>
+    <span id="room" style="opacity:.8"></span>
   </div>
 
   <!-- Yjs (CRDT) + y-websocket provider (servidor público de demonstração) -->
@@ -43,16 +43,17 @@
     const peersEl = document.getElementById('peers');
     const roomEl = document.getElementById('room');
 
-    // Sala pela hash (#capitulo-1). Se não houver, usa 'default'
-    const room = (location.hash.replace('#','') || 'default').toLowerCase();
-    roomEl.textContent = `Sala: ${room}`;
+    // ===== Sala ÚNICA (fixa) =====
+    // Todo mundo conecta aqui; sem #hash, sem múltiplas salas
+    const ROOM_ID = 'editor-global-um-unico-documento';
+    roomEl.textContent = `Sala: ${ROOM_ID}`;
 
     // Documento Yjs e tipo de texto compartilhado
     const ydoc = new Y.Doc();
     const ytext = ydoc.getText('doc');
 
     // Provider WebSocket (servidor público de demo). Para produção, hospede o seu próprio.
-    const provider = new WebsocketProvider('wss://demos.yjs.dev', `editor-${room}`, ydoc);
+    const provider = new WebsocketProvider('wss://demos.yjs.dev', ROOM_ID, ydoc);
 
     // Awareness (presença) — conta peers conectados
     const awareness = provider.awareness;
@@ -74,7 +75,6 @@
       applyingRemote = true;
       const html = ytext.toString();
       if (editor.innerHTML !== html) {
-        // Tenta preservar posição de scroll
         const yScroll = window.scrollY;
         editor.innerHTML = html;
         window.scrollTo(0, yScroll);
@@ -88,30 +88,27 @@
     // Observa mudanças do CRDT
     ytext.observe(() => applyFromY());
 
-    // Empurra mudanças locais para o CRDT (com debounce leve)
+    // Empurra mudanças locais para o CRDT (com debounce)
     let t = null;
     const pushLocal = () => {
       if (applyingRemote) return;
       clearTimeout(t);
       t = setTimeout(() => {
         const html = editor.innerHTML;
-        // Substitui todo o conteúdo — simples e robusto para HTML básico
+        // Estratégia simples: substitui todo o conteúdo — robusto para HTML básico
         ytext.delete(0, ytext.length);
         ytext.insert(0, html);
       }, 120);
     };
 
     editor.addEventListener('input', pushLocal);
-    editor.addEventListener('drop', (e)=> setTimeout(pushLocal, 0));
-    editor.addEventListener('paste', (e)=> setTimeout(pushLocal, 0));
+    editor.addEventListener('drop', () => setTimeout(pushLocal, 0));
+    editor.addEventListener('paste', () => setTimeout(pushLocal, 0));
 
-    // Conteúdo inicial quando a sala é criada do zero
+    // Conteúdo inicial quando o doc está vazio
     if (ytext.length === 0) {
-      ytext.insert(0, `<h2>Bem-vindo à sala <em>${room}</em></h2><p>Edite este texto. Abra a <strong>mesma URL</strong> em outra aba ou computador para ver a colaboração em tempo real.</p>`);
+      ytext.insert(0, `<h2>Documento global</h2><p>Todo mundo que abrir esta página edita o <strong>mesmo</strong> texto em tempo real.</p>`);
     }
-
-    // Dica: troque o hash para mudar de sala sem recarregar a página
-    window.addEventListener('hashchange', () => location.reload());
   </script>
 </body>
 </html>
