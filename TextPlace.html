@@ -3,112 +3,259 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Editor de Texto Colaborativo (sem Firebase)</title>
+  <title>Editor de Texto — Colaborativo (Yjs, sala única)</title>
   <style>
-    body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif; }
-    header { padding: .6rem 1rem; background: #2563eb; color: white; display:flex; align-items:center; gap:.75rem; }
-    header h1 { font-size: 1.1rem; margin: 0; }
-    header small { opacity:.9 }
-    #peers { margin-left:auto; background:rgba(255,255,255,.15); padding:.2rem .55rem; border-radius:999px; font-weight:600 }
-    main { padding: 0; display:grid; place-items:start center; }
-    #editor { padding: 1rem; min-height: 85vh; outline: none; max-width: 900px; width: min(100%, 900px); line-height:1.6; }
-    #editor:empty:before { content: 'Digite aqui...'; color:#94a3b8 }
-    .status { position: sticky; bottom: 0; background:#0b1220; color:#cbd5e1; padding:.4rem .75rem; font-size:.9rem; display:flex; gap:.75rem; align-items:center; }
-    code { background: rgba(0,0,0,.12); padding:.1rem .35rem; border-radius:.35rem }
+    :root { --bg:#f6f7fb; --panel:#ffffff; --ink:#0f172a; --muted:#64748b; --accent:#2563eb; --border:#e2e8f0; --shadow:0 10px 25px rgba(0,0,0,.08); --radius:14px; --page-bg:#fff; }
+    .dark { --bg:#0b1220; --panel:#0f172a; --ink:#e2e8f0; --muted:#94a3b8; --accent:#60a5fa; --border:#1f2937; --shadow:0 10px 25px rgba(0,0,0,.35); --page-bg:#0f172a; }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial; color:var(--ink); background:linear-gradient(180deg,var(--bg),#eef2ff 120%)}
+    .app{display:grid;grid-template-rows:auto auto 1fr auto;min-height:100svh}
+    header.topbar{position:sticky;top:0;z-index:20;background:var(--panel);border-bottom:1px solid var(--border);box-shadow:var(--shadow)}
+    .row{display:flex;align-items:center;gap:.5rem;padding:.75rem 1rem;flex-wrap:wrap}
+    .row .group{display:flex;align-items:center;gap:.25rem;border-radius:999px;padding:.25rem;border:1px solid var(--border)}
+    button.tool,select,input[type="color"]{appearance:none;-webkit-appearance:none;border:1px solid transparent;background:transparent;color:var(--ink);padding:.45rem .65rem;border-radius:999px;cursor:pointer;font:inherit;line-height:1}
+    button.tool[aria-pressed="true"]{background:rgba(37,99,235,.12);border-color:var(--accent)}
+    button.tool:hover{background:rgba(15,23,42,.06)}
+    .titlebar{display:flex;align-items:center;gap:.75rem;padding:.6rem 1rem;background:var(--panel);border-bottom:1px solid var(--border)}
+    .titlebar input{border:0;outline:0;font-size:1.1rem;padding:.4rem .6rem;border-radius:.6rem;background:transparent;color:var(--ink);font-weight:600;min-width:12ch;flex:0 1 480px}
+    .badge{border:1px solid var(--border);border-radius:999px;padding:.25rem .6rem;color:var(--muted)}
+    .spacer{flex:1}
+    main{display:grid;place-items:start center;padding:2rem 1rem}
+    .page-wrap{width:min(100%,900px)}
+    .page{background:var(--page-bg);min-height:297mm;width:210mm;max-width:100%;margin:0 auto 2rem;box-shadow:var(--shadow);border:1px solid var(--border);border-radius:var(--radius);padding:22mm;color:var(--ink)}
+    #editor{outline:none;min-height:60vh;line-height:1.6;font-size:16px}
+    #editor:empty:before{content:attr(data-placeholder);color:var(--muted)}
+    footer.status{position:sticky;bottom:0;z-index:15;background:var(--panel);border-top:1px solid var(--border);color:var(--muted);display:flex;gap:1rem;align-items:center;justify-content:space-between;padding:.6rem 1rem;font-size:.92rem}
+    .tool svg{width:18px;height:18px;display:block}
+    input[type="color"]{padding:0;width:30px;height:30px;border-radius:50%;border:1px solid var(--border);overflow:hidden}
+    label.color{display:flex;align-items:center;gap:.35rem;padding:.25rem .5rem;border:1px solid var(--border);border-radius:999px}
+    .zoom{display:flex;align-items:center;gap:.35rem}
+    @media print{body{background:#fff}header.topbar,.titlebar,footer.status{display:none!important}.page{box-shadow:none;border:0;width:210mm;min-height:auto;padding:20mm}@page{size:A4;margin:15mm}}
   </style>
 </head>
 <body>
-  <header>
-    <h1>Editor Colaborativo — Sala Única</h1>
-    <small>Todas as pessoas entram no mesmo documento</small>
-    <span id="peers">👥 1</span>
-  </header>
+  <div class="app" id="app">
+    <header class="topbar" role="toolbar" aria-label="Barra de ferramentas do editor">
+      <div class="row" id="toolbar">
+        <div class="group">
+          <button class="tool" id="undo" title="Desfazer (Ctrl+Z)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14L4 9l5-5"/><path d="M20 20a8 8 0 0 0-16 0"/></svg></button>
+          <button class="tool" id="redo" title="Refazer (Ctrl+Shift+Z)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14l5-5-5-5"/><path d="M4 20a8 8 0 0 1 16 0"/></svg></button>
+        </div>
+        <div class="group">
+          <select id="block" title="Parágrafo / Cabeçalhos" aria-label="Tipo de bloco">
+            <option value="P">Parágrafo</option>
+            <option value="H1">Título 1</option>
+            <option value="H2">Título 2</option>
+            <option value="H3">Título 3</option>
+            <option value="BLOCKQUOTE">Citação</option>
+            <option value="PRE">Código</option>
+          </select>
+          <select id="font" title="Fonte" aria-label="Fonte">
+            <option value="">(Padrão)</option>
+            <option>Arial</option>
+            <option>Georgia</option>
+            <option>Times New Roman</option>
+            <option>Cambria</option>
+            <option>Garamond</option>
+            <option>Courier New</option>
+            <option>Inter</option>
+            <option>Roboto</option>
+          </select>
+          <select id="size" title="Tamanho" aria-label="Tamanho da fonte">
+            <option value="14">14</option>
+            <option value="16" selected>16</option>
+            <option value="18">18</option>
+            <option value="20">20</option>
+            <option value="24">24</option>
+            <option value="28">28</option>
+            <option value="32">32</option>
+          </select>
+        </div>
+        <div class="group">
+          <button class="tool" data-cmd="bold" title="Negrito (Ctrl+B)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 12a4 4 0 0 0 0-8H7v8h7z"/><path d="M15 12H7v8h8a4 4 0 0 0 0-8z"/></svg></button>
+          <button class="tool" data-cmd="italic" title="Itálico (Ctrl+I)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="4" x2="10" y2="4"/><line x1="14" y1="20" x2="5" y2="20"/><line x1="15" y1="4" x2="9" y2="20"/></svg></button>
+          <button class="tool" data-cmd="underline" title="Sublinhado (Ctrl+U)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3v7a6 6 0 0 0 12 0V3"/><line x1="4" y1="21" x2="20" y2="21"/></svg></button>
+          <button class="tool" data-cmd="strikeThrough" title="Tachado"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 5H3"/><path d="M21 12H3"/><path d="M21 19H8"/></svg></button>
+          <label class="color" title="Cor do texto"><input type="color" id="foreColor" aria-label="Cor do texto" value="#111827" /><small>Texto</small></label>
+          <label class="color" title="Marca-texto"><input type="color" id="hiliteColor" aria-label="Marca-texto" value="#fff59d" /><small>Marca</small></label>
+          <button class="tool" id="clear" title="Limpar formatação"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 4H8l-7 8 7 8h13"/><line x1="18" y1="8" x2="6" y2="20"/></svg></button>
+        </div>
+        <div class="group">
+          <button class="tool" data-cmd="justifyLeft" title="Alinhar à esquerda"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="15" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+          <button class="tool" data-cmd="justifyCenter" title="Centralizar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="18" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="6" y1="18" x2="18" y2="18"/></svg></button>
+          <button class="tool" data-cmd="justifyRight" title="Alinhar à direita"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="9" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+          <button class="tool" data-cmd="justifyFull" title="Justificar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+        </div>
+        <div class="group">
+          <button class="tool" data-cmd="insertUnorderedList" title="Lista com marcadores"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="4" cy="6" r="1"/><circle cx="4" cy="12" r="1"/><circle cx="4" cy="18" r="1"/></svg></button>
+          <button class="tool" data-cmd="insertOrderedList" title="Lista numerada"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="10" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/><line x1="10" y1="18" x2="21" y2="18"/><path d="M4 6h1v4"/><path d="M4 12h2v4H4v2h2"/><path d="M4 18h3"/></svg></button>
+          <button class="tool" data-cmd="outdent" title="Desidentar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6H4"/><path d="M14 12H4"/><path d="M20 18H4"/><path d="M10 9l-3 3 3 3"/></svg></button>
+          <button class="tool" data-cmd="indent" title="Indentar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6H4"/><path d="M20 12H10"/><path d="M20 18H4"/><path d="M7 9l3 3-3 3"/></svg></button>
+        </div>
+        <div class="group">
+          <button class="tool" id="link" title="Inserir link (Ctrl+K)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 1 7 0l1 1a5 5 0 0 1-7 7l-1-1"/><path d="M14 11a5 5 0 0 1-7 0l-1-1a5 5 0 0 1 7-7l1 1"/></svg></button>
+          <input hidden type="file" id="imagePicker" accept="image/*" />
+          <button class="tool" id="image" title="Inserir imagem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></button>
+        </div>
+        <div class="group">
+          <button class="tool" id="print" title="Imprimir / PDF (Ctrl+P)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/></svg></button>
+          <button class="tool" id="darkMode" title="Modo claro/escuro"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></button>
+          <div class="zoom"><button class="tool" id="zoomOut" title="Zoom -">–</button><small id="zoomLabel">100%</small><button class="tool" id="zoomIn" title="Zoom +">+</button></div>
+        </div>
+      </div>
+    </header>
 
-  <main>
-    <div id="editor" contenteditable="true"></div>
-  </main>
+    <div class="titlebar">
+      <input id="title" type="text" placeholder="Sem título" value="Documento global" />
+      <div class="badge" id="peers">👥 1</div>
+      <div class="spacer"></div>
+      <small id="syncStatus">Conectando… <strong id="syncPct">0%</strong></small>
+    </div>
 
-  <div class="status">
-    <span id="sync">Conectando…</span>
-    <span id="room" style="opacity:.8"></span>
+    <main>
+      <div class="page-wrap">
+        <section class="page" id="page">
+          <article id="editor" contenteditable="true" role="textbox" aria-multiline="true" data-placeholder="Comece a digitar…">
+            <h1>Editor de Texto — Colaborativo</h1>
+            <p>Todos que abrirem esta página editarão o <strong>mesmo documento</strong> em tempo real (sala única).</p>
+          </article>
+        </section>
+      </div>
+    </main>
+
+    <footer class="status">
+      <div><small id="count">0 palavras · 0 caracteres</small></div>
+      <div class="right"><small id="cursor">Linha 1, Coluna 1</small></div>
+    </footer>
   </div>
 
   <!-- Yjs (CRDT) + y-websocket provider (servidor público de demonstração) -->
   <script type="module">
-    import * as Y from "https://cdn.jsdelivr.net/npm/yjs@13.6.10/dist/yjs.mjs";
-    import { WebsocketProvider } from "https://cdn.jsdelivr.net/npm/y-websocket@2.0.4/dist/y-websocket.mjs";
+    import * as Y from 'https://cdn.jsdelivr.net/npm/yjs@13.6.10/dist/yjs.mjs';
+    import { WebsocketProvider } from 'https://cdn.jsdelivr.net/npm/y-websocket@2.0.4/dist/y-websocket.mjs';
 
-    const editor = document.getElementById('editor');
-    const syncEl = document.getElementById('sync');
-    const peersEl = document.getElementById('peers');
-    const roomEl = document.getElementById('room');
+    // ===== Elementos =====
+    const $ = (s, r=document)=> r.querySelector(s);
+    const $$ = (s, r=document)=> Array.from(r.querySelectorAll(s));
+    const editor = $('#editor');
+    const titleInput = $('#title');
+    const zoomLabel = $('#zoomLabel');
+    const page = $('#page');
+    const peersBadge = $('#peers');
+    const syncStatus = $('#syncStatus');
+    const syncPct = $('#syncPct');
 
-    // ===== Sala ÚNICA (fixa) =====
-    // Todo mundo conecta aqui; sem #hash, sem múltiplas salas
-    const ROOM_ID = 'editor-global-um-unico-documento';
-    roomEl.textContent = `Sala: ${ROOM_ID}`;
+    // ===== UI: Toolbar =====
+    function exec(cmd, val=null){
+      document.execCommand('styleWithCSS', false, true);
+      val!==null ? document.execCommand(cmd, false, val) : document.execCommand(cmd, false, null);
+      editor.focus(); updateToolbarStates(); schedulePush();
+    }
+    $$('#toolbar .tool[data-cmd]').forEach(btn=> btn.addEventListener('click', ()=> exec(btn.dataset.cmd)));
+    $('#undo').addEventListener('click', ()=> exec('undo'));
+    $('#redo').addEventListener('click', ()=> exec('redo'));
+    $('#block').addEventListener('change', (e)=>{ const tag=e.target.value; tag==='PRE' ? wrapSelectionWith('pre') : document.execCommand('formatBlock', false, tag); editor.focus(); schedulePush(); });
+    $('#font').addEventListener('change', (e)=> applyInlineStyle('fontFamily', e.target.value));
+    $('#size').addEventListener('change', (e)=> applyInlineStyle('fontSize', e.target.value+'px'));
+    function applyInlineStyle(styleProp, value){ const sel=window.getSelection(); if(!sel.rangeCount) return; const range=sel.getRangeAt(0); if(range.collapsed){ const span=document.createElement('span'); span.style[styleProp]=value; span.appendChild(document.createTextNode('&#8203;')); range.insertNode(span); sel.removeAllRanges(); const nr=document.createRange(); nr.selectNodeContents(span); nr.collapse(false); sel.addRange(nr);} else { wrapSelectionWith('span', el=> el.style[styleProp]=value); } schedulePush(); updateToolbarStates(); }
+    function wrapSelectionWith(tagName, mutate=(el)=>{}){ const sel=window.getSelection(); if(!sel.rangeCount) return; const range=sel.getRangeAt(0); const wrapper=document.createElement(tagName); mutate(wrapper); try{ wrapper.appendChild(range.extractContents()); }catch(e){ wrapper.textContent = sel.toString(); } range.insertNode(wrapper); sel.removeAllRanges(); const nr=document.createRange(); nr.selectNodeContents(wrapper); nr.collapse(false); sel.addRange(nr); editor.focus(); }
+    $('#foreColor').addEventListener('input', (e)=> exec('foreColor', e.target.value));
+    const hiliteInput = $('#hiliteColor');
+    hiliteInput.addEventListener('input', (e)=>{ const ok=document.execCommand('hiliteColor', false, e.target.value); if(!ok) exec('backColor', e.target.value); });
+    $('#clear').addEventListener('click', ()=> exec('removeFormat'));
+    $('#link').addEventListener('click', ()=>{ const url=prompt('URL do link (inclua https://):'); if(!url) return; exec('createLink', url); });
 
-    // Documento Yjs e tipo de texto compartilhado
+    // Imagens locais
+    const imagePicker = $('#imagePicker');
+    $('#image').addEventListener('click', ()=> imagePicker.click());
+    imagePicker.addEventListener('change', (e)=>{ const file=e.target.files[0]; if(!file) return; const reader=new FileReader(); reader.onload=()=> insertImage(reader.result, file.name); reader.readAsDataURL(file); imagePicker.value=''; });
+    function insertImage(src, alt=''){ const img=document.createElement('img'); img.src=src; img.alt=alt; img.style.maxWidth='100%'; img.style.height='auto'; insertNodeAtCaret(img); schedulePush(); }
+    function insertNodeAtCaret(node){ const sel=window.getSelection(); if(!sel.rangeCount){ editor.appendChild(node); return;} const range=sel.getRangeAt(0); range.deleteContents(); range.insertNode(node); range.setStartAfter(node); range.setEndAfter(node); sel.removeAllRanges(); sel.addRange(range); editor.focus(); }
+    editor.addEventListener('dragover', (e)=> e.preventDefault());
+    editor.addEventListener('drop', (e)=>{ e.preventDefault(); const file=e.dataTransfer.files && e.dataTransfer.files[0]; if(file && file.type.startsWith('image/')){ const reader=new FileReader(); reader.onload=()=> insertImage(reader.result, file.name); reader.readAsDataURL(file);} else { const text=e.dataTransfer.getData('text/plain'); if(text) document.execCommand('insertText', false, text); } });
+
+    // Dark / Zoom / Print
+    $('#darkMode').addEventListener('click', ()=> document.body.classList.toggle('dark'));
+    $('#zoomIn').addEventListener('click', ()=> setZoom(zoom+0.1));
+    $('#zoomOut').addEventListener('click', ()=> setZoom(zoom-0.1));
+    $('#print').addEventListener('click', ()=> window.print());
+    let zoom=1; function setZoom(z){ zoom=Math.min(2, Math.max(0.6, z)); page.style.transform=`scale(${zoom})`; page.style.transformOrigin='top center'; zoomLabel.textContent=Math.round(zoom*100)+'%'; }
+
+    // Contadores/cursor
+    function updateCounts(){ const text=editor.innerText||''; const words=text.trim().split(/\s+/).filter(Boolean).length; const chars=text.replace(/\s/g,'').length; $('#count').textContent=`${words} ${words===1?'palavra':'palavras'} · ${chars} ${chars===1?'caractere':'caracteres'}`; updateCursorPos(); }
+    function updateCursorPos(){ const sel=window.getSelection(); if(!sel.rangeCount){ $('#cursor').textContent='Linha 1, Coluna 1'; return;} const range=sel.getRangeAt(0).cloneRange(); range.collapse(true); const preRange=document.createRange(); preRange.selectNodeContents(editor); preRange.setEnd(range.endContainer, range.endOffset); const sub=preRange.toString(); const lines=sub.split(/\n/); const line=lines.length; const col=lines[lines.length-1].length+1; $('#cursor').textContent=`Linha ${line}, Coluna ${col}`; }
+    editor.addEventListener('input', ()=>{ updateCounts(); schedulePush(); updateToolbarStates(); });
+    editor.addEventListener('keyup', updateCursorPos);
+    editor.addEventListener('mouseup', ()=>{ updateCursorPos(); updateToolbarStates(); });
+    function updateToolbarStates(){ const map={ bold:document.queryCommandState('bold'), italic:document.queryCommandState('italic'), underline:document.queryCommandState('underline'), strikeThrough:document.queryCommandState('strikeThrough'), justifyLeft:document.queryCommandState('justifyLeft'), justifyCenter:document.queryCommandState('justifyCenter'), justifyRight:document.queryCommandState('justifyRight'), justifyFull:document.queryCommandState('justifyFull') }; Object.entries(map).forEach(([cmd,state])=>{ const btn=document.querySelector(`.tool[data-cmd="${cmd}"]`); if(btn) btn.setAttribute('aria-pressed', state?'true':'false'); });
+
+    // ======= COLABORAÇÃO (Yjs + servidor público de demonstração) =======
+    const ROOM_ID = 'editor-global-um-unico-documento'; // sala única fixa
     const ydoc = new Y.Doc();
     const ytext = ydoc.getText('doc');
-
-    // Provider WebSocket (servidor público de demo). Para produção, hospede o seu próprio.
     const provider = new WebsocketProvider('wss://demos.yjs.dev', ROOM_ID, ydoc);
 
-    // Awareness (presença) — conta peers conectados
+    // Presença simples (contagem de peers)
     const awareness = provider.awareness;
     awareness.setLocalStateField('user', { id: Math.random().toString(36).slice(2) });
-    const updatePeers = () => {
-      const states = Array.from(awareness.getStates().values());
-      peersEl.textContent = `👥 ${states.length}`;
-    };
+    const updatePeers = () => { const states = Array.from(awareness.getStates().values()); peersBadge.textContent = `👥 ${states.length}`; };
     awareness.on('change', updatePeers);
 
-    // Estado da conexão
-    provider.on('status', (e) => {
-      syncEl.textContent = e.status === 'connected' ? 'Sincronizado' : 'Reconectando…';
-    });
+    // Conexão + porcentagem “Conectando… X%”
+    let pctTimer = null, pct = 0;
+    const startProgress = () => {
+      clearInterval(pctTimer); pct = 0; syncPct.textContent = '0%';
+      pctTimer = setInterval(()=>{ if (pct < 90) { pct += Math.max(1, Math.round((90-pct)/6)); syncPct.textContent = pct + '%'; }}, 350);
+    };
+    const stopProgress = (complete=false) => {
+      clearInterval(pctTimer);
+      if (complete) { syncPct.textContent = '100%'; setTimeout(()=>{ syncStatus.textContent = 'Sincronizado'; }, 250); }
+    };
 
-    // Aplicar mudanças remotas no contenteditable sem loop
+    provider.on('status', (e)=>{
+      if (e.status === 'connected') { stopProgress(true); }
+      else { syncStatus.textContent = 'Conectando… '; syncStatus.appendChild(syncPct); startProgress(); }
+    });
+    provider.on('sync', (isSynced)=>{ if (isSynced) { stopProgress(true); } });
+
+    // Aplicar alterações remotas no editor (com proteção de loop)
     let applyingRemote = false;
     const applyFromY = () => {
       applyingRemote = true;
       const html = ytext.toString();
       if (editor.innerHTML !== html) {
-        const yScroll = window.scrollY;
-        editor.innerHTML = html;
-        window.scrollTo(0, yScroll);
+        const y = window.scrollY; editor.innerHTML = html; window.scrollTo({top:y, behavior:'instant'});
+        updateCounts(); updateToolbarStates();
       }
       applyingRemote = false;
     };
+    ytext.observe(()=> applyFromY());
 
-    // Inicializa editor a partir do estado atual
-    applyFromY();
+    // Enviar alterações locais para o CRDT (debounced)
+    let pushTimer = null;
+    function schedulePush(){ if (applyingRemote) return; clearTimeout(pushTimer); pushTimer = setTimeout(pushLocal, 120); }
+    function pushLocal(){ if (applyingRemote) return; const html = editor.innerHTML; ytext.delete(0, ytext.length); ytext.insert(0, html); }
 
-    // Observa mudanças do CRDT
-    ytext.observe(() => applyFromY());
-
-    // Empurra mudanças locais para o CRDT (com debounce)
-    let t = null;
-    const pushLocal = () => {
-      if (applyingRemote) return;
-      clearTimeout(t);
-      t = setTimeout(() => {
-        const html = editor.innerHTML;
-        // Estratégia simples: substitui todo o conteúdo — robusto para HTML básico
-        ytext.delete(0, ytext.length);
-        ytext.insert(0, html);
-      }, 120);
-    };
-
-    editor.addEventListener('input', pushLocal);
-    editor.addEventListener('drop', () => setTimeout(pushLocal, 0));
-    editor.addEventListener('paste', () => setTimeout(pushLocal, 0));
-
-    // Conteúdo inicial quando o doc está vazio
+    // Conteúdo inicial (apenas se o doc está vazio)
     if (ytext.length === 0) {
-      ytext.insert(0, `<h2>Documento global</h2><p>Todo mundo que abrir esta página edita o <strong>mesmo</strong> texto em tempo real.</p>`);
+      ytext.insert(0, document.querySelector('#editor').innerHTML);
+    } else {
+      applyFromY();
     }
+
+    // Atalhos de teclado
+    document.addEventListener('keydown', (e)=>{
+      if ((e.ctrlKey||e.metaKey) && !e.shiftKey && e.key.toLowerCase()==='k'){ e.preventDefault(); $('#link').click(); }
+      if ((e.ctrlKey||e.metaKey) && !e.shiftKey && e.key.toLowerCase()==='p'){ /* deixa imprimir */ }
+      if (e.key==='Tab'){
+        const isList = document.queryCommandState('insertUnorderedList') || document.queryCommandState('insertOrderedList');
+        if (isList){ e.preventDefault(); exec(e.shiftKey ? 'outdent' : 'indent'); }
+      }
+    });
+
+    // Inicialização UI
+    (function init(){ setZoom(1); updateCounts(); updateToolbarStates(); })();
   </script>
 </body>
 </html>
