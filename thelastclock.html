@@ -44,17 +44,28 @@
   </style>
 </head>
 <body>
-  <h2>O Ultimo Relogio</h2>
-  <br><br>
-  <p>Esse é literalmente a ultima coisa que quebraria no universo, uma volta durará mais que milhares de vezes o tempo do inicio do universo(5,39×10^−44 segundos) até o final dele(10^100 anos).</p>
-  <br><br>
-  <a href="index.html">Voltar Á Pagina Inicial</a>
-  <br><br>
-  <div class="container">
-    <h1>Relógio 4097 bits</h1>
-    <h2 id="dateDisplay"></h2>
-    <div class="meta" id="bitsInfo"></div>
-  </div>
+  <main class="container" role="main">
+    <header>
+      <h1>Relógio de 4097 bits</h1>
+      <h2 id="dateDisplay" aria-live="polite">—</h2>
+    </header>
+
+    <p class="lead">
+      O <em>Último Relógio</em>: pensado para marcar escalas absurdas — uma volta duraria mais do que milhares de vezes
+      o intervalo entre o início do Universo
+      (<span title="Tempo de Planck">5,39×10<sup>−44</sup>&nbsp;s</span>)
+      e um cenário extremo de morte térmica
+      (<span title="Estimativa especulativa">10<sup>100</sup>&nbsp;anos</span>).
+    </p>
+
+    <div class="meta" id="bitsInfo">
+      <!-- Ex.: “Capacidade: 4097 bits → 2^4097 estados.” (preencheria via script, se existisse) -->
+    </div>
+
+    <nav class="toolbar" aria-label="Navegação">
+      <a class="button" href="index.html" rel="prev">Voltar à página inicial</a>
+    </nav>
+  </main>
 
   <script>
     const dateDisplay = document.getElementById('dateDisplay');
