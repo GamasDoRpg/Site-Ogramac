@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Relógio 4097 bits - Data Completa</title>
+  <style>
+    body {
+      background: linear-gradient(135deg, #1a1a1a 0%, #000000 100%);
+      color: #e6edf3;
+      font-family: 'Courier New', monospace;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      text-align: center;
+      padding: 30px 50px;
+      border: 3px solid #ff6b6b; 
+      border-radius: 15px;
+      background: rgba(26, 26, 26, 0.95);
+      box-shadow: 0 0 25px #ff6b6b, 0 0 40px #4dabf7 inset; 
+    }
+    h1 {
+      font-size: 2.2rem;
+      margin-bottom: 8px;
+      color: #ff6b6b;
+      text-shadow: 0 0 15px #ff6b6b;
+    }
+    h2 {
+      font-size: 2rem;
+      color: #4dabf7;
+      text-shadow: 0 0 15px #4dabf7;
+      margin: 10px 0 18px;
+    }
+    .meta {
+      font-size: 0.95rem;
+      color: #aab4bf;
+      line-height: 1.4;
+      word-break: break-word;
+    }
+    .meta code { color: #e6edf3; }
+  </style>
+</head>
+<body>
+  <h1>O Ultimo Relogio</h1>
+  <h2>Esse é literalmente a ultima coisa que quebraria no universo, uma volta durará mais que milhares de vezes o tempo do inicio do universo(5,39×10^−44 segundos) até o final dele(10^100 anos).</h2>
+  <a href="index.html">Voltar Á Pagina Inicial</a>
+  <div class="container">
+    <h1>Relógio 4097 bits</h1>
+    <h2 id="dateDisplay"></h2>
+    <div class="meta" id="bitsInfo"></div>
+  </div>
+
+  <script>
+    const dateDisplay = document.getElementById('dateDisplay');
+    const bitsInfo    = document.getElementById('bitsInfo');
+
+   
+    const MAX_BITS = 4097n;
+    const MOD      = 1n << MAX_BITS;        
+    const MASK64   = (1n << 64n) - 1n;      
+    let reg4097    = 0n;                    
+    let wraps      = 0n;                    
+
+  
+    const startMs  = Date.now();
+    let lastSec    = BigInt(Math.floor(startMs / 1000));
+
+    function to2Digits(n){ return String(n).padStart(2, '0'); }
+
+    function render(now) {
+      
+      const d   = new Date(now);
+      const dia = to2Digits(d.getDate());
+      const mes = to2Digits(d.getMonth() + 1);
+      const ano = d.getFullYear();
+      const hh  = to2Digits(d.getHours());
+      const mm  = to2Digits(d.getMinutes());
+      const ss  = to2Digits(d.getSeconds());
+
+      dateDisplay.textContent = `${dia}/${mes}/${ano} ${hh}:${mm}:${ss}`;
+
+      
+      const lsb64 = reg4097 & MASK64;
+      bitsInfo.innerHTML =
+        `Registrador <code>${MAX_BITS.toString()}-bit</code> (mod 2^${MAX_BITS.toString()}):<br>` +
+        `LSB64 = <code>0x${lsb64.toString(16).padStart(16, '0')}</code><br>` +
+        `Voltas (wraps) = <code>${wraps.toString()}</code>`;
+    }
+
+    function tick() {
+      const nowMs     = Date.now();
+      const curSec    = BigInt(Math.floor(nowMs / 1000));
+      let delta       = curSec - lastSec;
+      if (delta < 0n) delta = 0n; 
+
+      if (delta > 0n) {
+        
+        const sum = reg4097 + delta;
+        if (sum >= MOD) {
+          wraps += sum / MOD;     
+          reg4097 = sum % MOD;    
+        } else {
+          reg4097 = sum;
+        }
+        lastSec = curSec;
+      }
+
+      render(nowMs);
+
+      
+      const delay = 1000 - (nowMs % 1000);
+      setTimeout(tick, delay);
+    }
+
+    
+    render(Date.now());
+    tick();
+  </script>
+</body>
+</html>
