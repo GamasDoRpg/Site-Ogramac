@@ -1,0 +1,762 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#090A0F" />
+  <title>Atero Aerospace — Propulsão espacial e de alta atmosfera</title>
+  <meta name="description" content="Atero Aerospace: propulsão espacial e de alta atmosfera. Simples, funcional e ambiciosa — do laboratório ao voo." />
+
+  <style>
+    :root{
+      --bg0:#070810;
+      --bg1:#090A16;
+      --card: rgba(255,255,255,.06);
+      --card2: rgba(255,255,255,.09);
+      --line: rgba(255,255,255,.12);
+      --text: rgba(255,255,255,.92);
+      --muted: rgba(255,255,255,.68);
+      --muted2: rgba(255,255,255,.50);
+      --brandA:#7C5CFF;
+      --brandB:#22D3EE;
+      --brandC:#34D399;
+      --shadow: 0 20px 60px rgba(0,0,0,.55);
+      --shadow2: 0 10px 30px rgba(0,0,0,.35);
+      --radius: 22px;
+      --radius2: 14px;
+      --max: 1160px;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      color:var(--text);
+      background: radial-gradient(1200px 800px at 75% 10%, rgba(124,92,255,.18), transparent 55%),
+                  radial-gradient(900px 700px at 20% 30%, rgba(34,211,238,.14), transparent 60%),
+                  radial-gradient(700px 700px at 70% 75%, rgba(52,211,153,.10), transparent 65%),
+                  linear-gradient(180deg, var(--bg0), var(--bg1) 45%, #060713 100%);
+      overflow-x:hidden;
+    }
+
+    /* --- Background stars + noise --- */
+    .bg{
+      position:fixed; inset:0;
+      pointer-events:none;
+      z-index:-2;
+      opacity:.95;
+    }
+    .stars, .stars2{
+      position:absolute; inset:-50px;
+      background-image:
+        radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,.85) 60%, transparent 61%),
+        radial-gradient(1px 1px at 30% 80%, rgba(255,255,255,.70) 60%, transparent 61%),
+        radial-gradient(1px 1px at 70% 40%, rgba(255,255,255,.65) 60%, transparent 61%),
+        radial-gradient(1px 1px at 90% 60%, rgba(255,255,255,.75) 60%, transparent 61%),
+        radial-gradient(1px 1px at 55% 15%, rgba(255,255,255,.60) 60%, transparent 61%),
+        radial-gradient(1px 1px at 15% 55%, rgba(255,255,255,.55) 60%, transparent 61%),
+        radial-gradient(1px 1px at 45% 65%, rgba(255,255,255,.50) 60%, transparent 61%),
+        radial-gradient(1px 1px at 80% 85%, rgba(255,255,255,.55) 60%, transparent 61%);
+      background-size: 420px 420px;
+      filter: drop-shadow(0 0 6px rgba(255,255,255,.10));
+      animation: drift 80s linear infinite;
+      opacity:.55;
+    }
+    .stars2{
+      background-size: 680px 680px;
+      opacity:.35;
+      animation-duration: 120s;
+      transform: rotate(8deg);
+    }
+    @keyframes drift{
+      from{transform: translate3d(0,0,0)}
+      to{transform: translate3d(-420px, -420px, 0)}
+    }
+    .noise{
+      position:absolute; inset:0;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='.18'/%3E%3C/svg%3E");
+      mix-blend-mode: overlay;
+      opacity:.20;
+    }
+
+    /* --- Layout --- */
+    .wrap{max-width:var(--max); margin:0 auto; padding:0 22px}
+    header{
+      position:sticky; top:0; z-index:50;
+      backdrop-filter: blur(14px);
+      background: linear-gradient(180deg, rgba(7,8,16,.70), rgba(7,8,16,.35));
+      border-bottom: 1px solid rgba(255,255,255,.08);
+    }
+    .nav{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:14px 0;
+      gap:14px;
+    }
+    .brand{
+      display:flex; align-items:center; gap:12px;
+      text-decoration:none; color:var(--text);
+    }
+    .logo{
+      width:38px; height:38px; border-radius:12px;
+      background:
+        radial-gradient(16px 16px at 30% 30%, rgba(255,255,255,.25), transparent 60%),
+        linear-gradient(135deg, rgba(124,92,255,.85), rgba(34,211,238,.75) 55%, rgba(52,211,153,.55));
+      box-shadow: var(--shadow2);
+      position:relative;
+      overflow:hidden;
+    }
+    .logo::after{
+      content:"";
+      position:absolute; inset:-40%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.18), transparent);
+      transform: rotate(25deg);
+      animation: sheen 3.6s ease-in-out infinite;
+    }
+    @keyframes sheen{
+      0%{transform: translateX(-35%) rotate(25deg)}
+      45%{transform: translateX(35%) rotate(25deg)}
+      100%{transform: translateX(35%) rotate(25deg)}
+    }
+
+    .brand b{letter-spacing:.4px}
+    .brand small{display:block; color:var(--muted2); margin-top:2px}
+
+    nav a{
+      color:var(--muted);
+      text-decoration:none;
+      font-size:14px;
+      padding:10px 12px;
+      border-radius:999px;
+      border:1px solid transparent;
+      transition: .18s ease;
+    }
+    nav a:hover{
+      color:var(--text);
+      background: rgba(255,255,255,.06);
+      border-color: rgba(255,255,255,.10);
+    }
+    .navRight{display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:flex-end}
+    .btn{
+      cursor:pointer;
+      color:var(--text);
+      text-decoration:none;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      padding:10px 14px;
+      border-radius:999px;
+      font-size:14px;
+      transition:.18s ease;
+      display:inline-flex; align-items:center; gap:10px;
+    }
+    .btn:hover{transform: translateY(-1px); border-color: rgba(255,255,255,.22); background: rgba(255,255,255,.08)}
+    .btn.primary{
+      border-color: rgba(124,92,255,.45);
+      background: linear-gradient(135deg, rgba(124,92,255,.35), rgba(34,211,238,.18));
+      box-shadow: 0 18px 55px rgba(124,92,255,.20);
+    }
+    .pill{
+      font-size:12px;
+      color:rgba(255,255,255,.78);
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.04);
+      padding:7px 10px;
+      border-radius:999px;
+      display:inline-flex; align-items:center; gap:8px;
+    }
+    .dot{
+      width:7px; height:7px; border-radius:99px;
+      background: radial-gradient(circle at 30% 30%, #fff, rgba(255,255,255,.2));
+      box-shadow: 0 0 18px rgba(34,211,238,.35);
+    }
+
+    /* --- Hero --- */
+    .hero{padding: 52px 0 24px}
+    .heroGrid{
+      display:grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap:22px;
+      align-items:stretch;
+    }
+    .heroCard{
+      border-radius: calc(var(--radius) + 6px);
+      background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.04));
+      border: 1px solid rgba(255,255,255,.10);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      position:relative;
+    }
+    .heroCard::before{
+      content:"";
+      position:absolute; inset:-2px;
+      background:
+        radial-gradient(900px 420px at 20% 0%, rgba(124,92,255,.26), transparent 60%),
+        radial-gradient(780px 380px at 80% 20%, rgba(34,211,238,.18), transparent 58%),
+        radial-gradient(620px 360px at 60% 110%, rgba(52,211,153,.12), transparent 58%);
+      z-index:0;
+    }
+    .heroInner{position:relative; z-index:1; padding:30px}
+    .kicker{display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:14px}
+    .title{
+      font-size: clamp(34px, 4vw, 52px);
+      line-height: 1.05;
+      margin: 10px 0 14px;
+      letter-spacing: -0.7px;
+    }
+    .gradText{
+      background: linear-gradient(90deg, rgba(124,92,255,1), rgba(34,211,238,1), rgba(52,211,153,1));
+      -webkit-background-clip:text;
+      background-clip:text;
+      color:transparent;
+    }
+    .lead{
+      margin:0;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.6;
+      max-width: 62ch;
+    }
+    .heroActions{display:flex; gap:12px; margin-top:18px; flex-wrap:wrap}
+    .heroMeta{
+      margin-top:18px;
+      display:grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap:10px;
+    }
+    .stat{
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.04);
+      border-radius: var(--radius2);
+      padding:12px 12px;
+    }
+    .stat b{display:block; font-size:14px}
+    .stat span{display:block; color:var(--muted2); margin-top:4px; font-size:12px; line-height:1.35}
+
+    /* --- Side panel --- */
+    .side{
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+    }
+    .panel{
+      border-radius: var(--radius);
+      background: rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.10);
+      box-shadow: var(--shadow2);
+      overflow:hidden;
+      position:relative;
+    }
+    .panel .inner{padding:18px}
+    .panel h3{margin:0 0 10px; font-size:14px; letter-spacing:.4px; color: rgba(255,255,255,.85); text-transform:uppercase}
+    .panel p{margin:0; color:var(--muted); line-height:1.55; font-size:14px}
+    .miniGrid{
+      display:grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap:10px;
+      margin-top:12px;
+    }
+    .mini{
+      border-radius: 14px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.03);
+      padding:12px;
+    }
+    .mini b{display:block; font-size:13px}
+    .mini span{display:block; margin-top:4px; color:var(--muted2); font-size:12px; line-height:1.35}
+
+    /* --- Sections --- */
+    section{padding: 34px 0}
+    .sectionHead{
+      display:flex; justify-content:space-between; align-items:flex-end; gap:16px;
+      margin-bottom: 14px;
+    }
+    .sectionHead h2{
+      margin:0;
+      font-size: 18px;
+      letter-spacing: .5px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.88);
+    }
+    .sectionHead p{
+      margin:0;
+      color: var(--muted2);
+      font-size: 13px;
+      max-width: 70ch;
+      line-height:1.45;
+    }
+
+    .grid3{
+      display:grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap:14px;
+    }
+    .card{
+      border-radius: var(--radius);
+      border:1px solid rgba(255,255,255,.10);
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      box-shadow: var(--shadow2);
+      overflow:hidden;
+      position:relative;
+      transition: .18s ease;
+      min-height: 180px;
+    }
+    .card:hover{
+      transform: translateY(-2px);
+      border-color: rgba(255,255,255,.18);
+      background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.04));
+    }
+    .card .inner{padding:18px}
+    .tag{
+      display:inline-flex; align-items:center; gap:8px;
+      font-size:12px;
+      color: rgba(255,255,255,.78);
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.18);
+      padding: 6px 10px;
+      border-radius: 999px;
+    }
+    .icon{
+      width:10px; height:10px; border-radius: 99px;
+      background: linear-gradient(180deg, rgba(255,255,255,.9), rgba(255,255,255,.15));
+      box-shadow: 0 0 18px rgba(124,92,255,.25);
+    }
+    .card h3{margin:12px 0 8px; font-size:16px; letter-spacing:-.2px}
+    .card p{margin:0; color: var(--muted); line-height:1.6; font-size:14px}
+    .card ul{margin:12px 0 0; padding:0 0 0 16px; color: var(--muted); font-size:13px; line-height:1.55}
+    .card li{margin:6px 0}
+
+    /* --- Roadmap --- */
+    .roadmap{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:12px;
+    }
+    .step{
+      border-radius: var(--radius);
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.03);
+      padding:16px 16px;
+      display:flex; gap:14px; align-items:flex-start;
+    }
+    .badge{
+      min-width:38px; height:38px; border-radius: 14px;
+      background: linear-gradient(135deg, rgba(124,92,255,.35), rgba(34,211,238,.20));
+      border: 1px solid rgba(255,255,255,.12);
+      display:grid; place-items:center;
+      box-shadow: 0 14px 40px rgba(0,0,0,.35);
+      font-weight:700;
+    }
+    .step b{display:block; font-size:14px}
+    .step span{display:block; margin-top:6px; color: var(--muted); font-size:13px; line-height:1.55}
+
+    /* --- Footer --- */
+    footer{
+      padding: 26px 0 40px;
+      border-top:1px solid rgba(255,255,255,.08);
+      background: linear-gradient(180deg, rgba(7,8,16,0), rgba(7,8,16,.65));
+    }
+    .foot{
+      display:flex; flex-wrap:wrap; gap:14px;
+      align-items:center; justify-content:space-between;
+      color: var(--muted2);
+      font-size: 13px;
+    }
+    .links{display:flex; gap:10px; flex-wrap:wrap}
+    .links a{color: var(--muted); text-decoration:none; padding:8px 10px; border-radius:999px; border:1px solid transparent}
+    .links a:hover{color:var(--text); background:rgba(255,255,255,.05); border-color:rgba(255,255,255,.10)}
+
+    /* --- Reveal animation --- */
+    .reveal{opacity:0; transform: translateY(10px); transition: .5s ease}
+    .reveal.on{opacity:1; transform:none}
+
+    /* --- Responsive --- */
+    @media (max-width: 980px){
+      .heroGrid{grid-template-columns: 1fr}
+      .heroMeta{grid-template-columns: 1fr; gap:10px}
+      .grid3{grid-template-columns: 1fr}
+      nav{display:none}
+    }
+    @media (prefers-reduced-motion: reduce){
+      .stars, .stars2, .logo::after{animation:none}
+      .btn:hover, .card:hover{transform:none}
+      .reveal{transition:none}
+      html{scroll-behavior:auto}
+    }
+  </style>
+</head>
+
+<body>
+  <div class="bg" aria-hidden="true">
+    <div class="stars"></div>
+    <div class="stars2"></div>
+    <div class="noise"></div>
+  </div>
+
+  <header>
+    <div class="wrap">
+      <div class="nav">
+        <a class="brand" href="#top">
+          <span class="logo" aria-hidden="true"></span>
+          <span>
+            <b>Atero Aerospace</b>
+            <small>Propulsão espacial & alta atmosfera</small>
+          </span>
+        </a>
+
+        <nav aria-label="Navegação">
+          <a href="#visao">Visão</a>
+          <a href="#divisoes">Divisões</a>
+          <a href="#roadmap">Roadmap</a>
+          <a href="#contato">Contato</a>
+        </nav>
+
+        <div class="navRight">
+          <span class="pill"><span class="dot" aria-hidden="true"></span>Pré-criação • 1 pessoa • 0 desculpas</span>
+          <a class="btn" href="#contato" title="Entre em contato">Falar com a Atero</a>
+          <a class="btn primary" href="#divisoes" title="Ver estrutura">Ver estrutura</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main id="top" class="wrap">
+    <!-- HERO -->
+    <section class="hero">
+      <div class="heroGrid">
+        <article class="heroCard reveal">
+          <div class="heroInner">
+            <div class="kicker">
+              <span class="pill">Alta atmosfera</span>
+              <span class="pill">Propulsão</span>
+              <span class="pill">Simplicidade funcional</span>
+            </div>
+
+            <h1 class="title">
+              Atero: <span class="gradText">engenharia direta</span><br/>
+              para ir do conceito ao céu (e além).
+            </h1>
+
+            <p class="lead">
+              A Atero Aerospace nasce com um objetivo simples de falar e difícil de executar:
+              construir propulsão e sistemas que aguentem o mundo real — com foco em alta atmosfera
+              e no caminho para o espaço. Sem firula. Só o que funciona.
+            </p>
+
+            <div class="heroActions">
+              <a class="btn primary" href="#roadmap">Ver o roadmap</a>
+              <a class="btn" href="#visao">Entender a visão</a>
+            </div>
+
+            <div class="heroMeta">
+              <div class="stat">
+                <b>Princípio</b>
+                <span>Menos complexidade “bonita”, mais complexidade que entrega.</span>
+              </div>
+              <div class="stat">
+                <b>Foco</b>
+                <span>Propulsão + alta atmosfera, com evolução incremental.</span>
+              </div>
+              <div class="stat">
+                <b>Modo</b>
+                <span>Construir, testar, iterar — e documentar tudo.</span>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <aside class="side">
+          <div class="panel reveal">
+            <div class="inner">
+              <h3>O que a Atero é (sem enrolação)</h3>
+              <p>
+                Uma empresa em estágio de pré-criação focada em <b>propulsão espacial</b> e <b>alta atmosfera</b>.
+                Hoje, o núcleo é enxuto: projeto e execução começam com uma base técnica forte e uma cultura de teste.
+              </p>
+              <div class="miniGrid">
+                <div class="mini">
+                  <b>DNA</b>
+                  <span>Minimalismo técnico + pragmatismo.</span>
+                </div>
+                <div class="mini">
+                  <b>Tom</b>
+                  <span>Sério, mas com humor de internet (do jeito certo).</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel reveal">
+            <div class="inner">
+              <h3>Valores que importam</h3>
+              <p>
+                Segurança, consistência de engenharia, transparência do processo e uma obsessão saudável por medir resultado.
+              </p>
+              <div class="miniGrid">
+                <div class="mini">
+                  <b>Teste & dados</b>
+                  <span>Se não mede, é só opinião.</span>
+                </div>
+                <div class="mini">
+                  <b>Iteração</b>
+                  <span>Falha pequena cedo & correção rápida.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- VISÃO -->
+    <section id="visao">
+      <div class="sectionHead">
+        <div>
+          <h2>Visão</h2>
+          <p>Uma estrutura simples, com funções claras: pensar, construir e sustentar.</p>
+        </div>
+        <span class="pill">Atero = “tinindo” por design</span>
+      </div>
+
+      <div class="grid3">
+        <div class="card reveal">
+          <div class="inner">
+            <span class="tag"><span class="icon" aria-hidden="true"></span>Direção técnica</span>
+            <h3>Do laboratório ao voo</h3>
+            <p>
+              A Atero existe para empurrar ideias para fora do papel — com protótipos, testes e evolução real.
+            </p>
+            <ul>
+              <li>Documentação clara (o que foi tentado e por quê)</li>
+              <li>Testes incrementais (nada de “salto de fé” gigante)</li>
+              <li>Arquitetura simples, com margem para crescer</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card reveal">
+          <div class="inner">
+            <span class="tag"><span class="icon" aria-hidden="true"></span>Alta atmosfera</span>
+            <h3>Onde o ar ainda manda</h3>
+            <p>
+              A fronteira onde aerodinâmica, controle e propulsão se tornam um jogo sério de detalhes.
+            </p>
+            <ul>
+              <li>Controle & estabilidade em regime complexo</li>
+              <li>Ensaio de materiais e térmica</li>
+              <li>Estratégia de teste: do pequeno ao escalável</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card reveal">
+          <div class="inner">
+            <span class="tag"><span class="icon" aria-hidden="true"></span>Espaço</span>
+            <h3>Escalada de capacidade</h3>
+            <p>
+              A meta é chegar no espaço com uma linha de desenvolvimento que faça sentido: custo, risco e execução.
+            </p>
+            <ul>
+              <li>Componentes reutilizáveis (onde der vantagem)</li>
+              <li>Processos simples que não quebram com escala</li>
+              <li>Foco em confiabilidade, não hype</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DIVISÕES -->
+    <section id="divisoes">
+      <div class="sectionHead">
+        <div>
+          <h2>Divisões</h2>
+          <p>Três frentes interligadas, com personalidade própria.</p>
+        </div>
+        <span class="pill">Mach 20 Labs • Atero Build • Atero Finances</span>
+      </div>
+
+      <div class="grid3">
+        <div class="card reveal">
+          <div class="inner">
+            <span class="tag"><span class="icon" aria-hidden="true"></span>Mach 20 Labs</span>
+            <h3>Teoria e projeto</h3>
+            <p>
+              Onde nascem os conceitos, simulações e decisões de arquitetura. A missão é reduzir risco antes de metal.
+            </p>
+            <ul>
+              <li>Modelagem, simulação e trade-offs</li>
+              <li>Requisitos, interfaces e verificação</li>
+              <li>Planos de teste e critérios de sucesso</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card reveal">
+          <div class="inner">
+            <span class="tag"><span class="icon" aria-hidden="true"></span>Atero Build</span>
+            <h3>Execução e protótipo</h3>
+            <p>
+              Montagem, bancada, instrumentação e iteração. A filosofia é simples: testar cedo e consertar rápido.
+            </p>
+            <ul>
+              <li>Protótipos funcionais</li>
+              <li>Testes de subsistemas</li>
+              <li>Integração e validação em etapas</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card reveal">
+          <div class="inner">
+            <span class="tag"><span class="icon" aria-hidden="true"></span>Atero Finances</span>
+            <h3>Operação e sustentabilidade</h3>
+            <p>
+              Organização, mídia, planejamento financeiro e processo. Sem isso, engenharia vira hobby caro.
+            </p>
+            <ul>
+              <li>Estratégia de recursos e prioridades</li>
+              <li>Comunicação e transparência</li>
+              <li>Gestão de risco & cronograma</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ROADMAP -->
+    <section id="roadmap">
+      <div class="sectionHead">
+        <div>
+          <h2>Roadmap</h2>
+          <p>Um caminho realista: pequenos marcos, aprendizados rápidos e evolução consistente.</p>
+        </div>
+        <span class="pill">Iterar > prometer</span>
+      </div>
+
+      <div class="roadmap">
+        <div class="step reveal">
+          <div class="badge">1</div>
+          <div>
+            <b>Base técnica e identidade</b>
+            <span>Definir escopo inicial, padrões de documentação e linguagem pública (com humor na medida).</span>
+          </div>
+        </div>
+
+        <div class="step reveal">
+          <div class="badge">2</div>
+          <div>
+            <b>Protótipos de bancada</b>
+            <span>Ensaios controlados, instrumentação simples e foco em aprender rápido com custo baixo.</span>
+          </div>
+        </div>
+
+        <div class="step reveal">
+          <div class="badge">3</div>
+          <div>
+            <b>Sub-sistemas integrados</b>
+            <span>Integração progressiva (controle, térmica, estrutura), sem pular etapas.</span>
+          </div>
+        </div>
+
+        <div class="step reveal">
+          <div class="badge">4</div>
+          <div>
+            <b>Demonstração em ambiente real</b>
+            <span>Teste que prova capacidade — não em tese, mas no mundo real, com dados publicáveis.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTATO -->
+    <section id="contato">
+      <div class="sectionHead">
+        <div>
+          <h2>Contato</h2>
+          <p>Quer acompanhar, colaborar ou só falar com a Atero? Deixe um canal aberto.</p>
+        </div>
+        <span class="pill">Sem spam • Sem papo mole</span>
+      </div>
+
+      <div class="grid3">
+        <div class="card reveal">
+          <div class="inner">
+            <span class="tag"><span class="icon" aria-hidden="true"></span>Canal principal</span>
+            <h3>X / Twitter</h3>
+            <p>Coloque aqui o @ da Atero e use como base de updates curtos: testes, progresso, bastidores e humor.</p>
+            <p style="margin-top:12px;color:var(--muted2);font-size:12px">Dica: troca esse texto por um link real quando tiver.</p>
+          </div>
+        </div>
+
+        <div class="card reveal">
+          <div class="inner">
+            <span class="tag"><span class="icon" aria-hidden="true"></span>E-mail</span>
+            <h3>Contato direto</h3>
+            <p>Se ainda não tem e-mail, usa um provisório (ex: contato@...) só para centralizar e parecer sério.</p>
+            <p style="margin-top:12px;color:var(--muted2);font-size:12px">Depois você migra sem drama.</p>
+          </div>
+        </div>
+
+        <div class="card reveal">
+          <div class="inner">
+            <span class="tag"><span class="icon" aria-hidden="true"></span>Media kit</span>
+            <h3>Brand e assets</h3>
+            <p>Uma pastinha com logo, paleta e “sobre” curtinho. Facilita quando alguém quiser citar a Atero.</p>
+            <p style="margin-top:12px;color:var(--muted2);font-size:12px">Pode ser Drive por enquanto.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <div class="foot">
+        <div>
+          © <span id="year"></span> <b>Atero Aerospace</b> • Propulsão espacial e de alta atmosfera
+        </div>
+        <div class="links">
+          <a href="#top">Topo</a>
+          <a href="#divisoes">Divisões</a>
+          <a href="#roadmap">Roadmap</a>
+          <a href="#contato">Contato</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Ano automático
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    // Scroll suave (sem quebrar preferências de acessibilidade)
+    document.documentElement.style.scrollBehavior =
+      matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
+
+    // Reveal ao aparecer na tela
+    const els = document.querySelectorAll(".reveal");
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        if (e.isIntersecting) {
+          e.target.classList.add("on");
+          io.unobserve(e.target);
+        }
+      }
+    }, { threshold: 0.12 });
+    els.forEach(el => io.observe(el));
+
+    // Micro parallax nos fundos (bem leve)
+    const bg = document.querySelector(".bg");
+    let raf = 0;
+    window.addEventListener("mousemove", (ev) => {
+      if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        const x = (ev.clientX / innerWidth - 0.5) * 10;
+        const y = (ev.clientY / innerHeight - 0.5) * 10;
+        bg.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+      });
+    }, { passive: true });
+  </script>
+</body>
+</html>
